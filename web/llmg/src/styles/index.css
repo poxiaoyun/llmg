@@ -71,6 +71,17 @@
 }
 
 @layer components {
+  .or-brand-wordmark {
+    font-family:
+      'Sora', 'Public Sans', ui-sans-serif, system-ui, -apple-system,
+      BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-optical-sizing: auto;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
   .or-grid-bg {
     background-image:
       linear-gradient(

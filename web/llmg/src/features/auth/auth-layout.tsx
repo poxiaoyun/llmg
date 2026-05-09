@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -10,28 +11,34 @@ type AuthLayoutProps = {
 export function AuthLayout({ children }: AuthLayoutProps) {
   const { t } = useTranslation()
   const { systemName, logo, loading } = useSystemConfig()
+  const isBrandWordmark = systemName.trim().toUpperCase() === 'LLMG'
 
   return (
     <div className='or-grid-bg bg-background relative grid h-svh max-w-none overflow-hidden'>
       <Link
         to='/'
-        className='text-foreground hover:bg-muted absolute top-4 left-4 z-10 flex items-center gap-2 rounded-md px-1.5 py-1 transition-colors sm:top-6 sm:left-6'
+        className='text-foreground hover:bg-muted absolute top-4 left-4 z-10 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors sm:top-6 sm:left-6'
       >
-        <div className='bg-primary/10 ring-primary/20 relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-md ring-1'>
-          {loading ? (
-            <Skeleton className='absolute inset-0 rounded-md' />
-          ) : (
-            <img
-              src={logo}
-              alt={t('Logo')}
-              className='h-5 w-5 rounded-sm object-cover'
-            />
-          )}
-        </div>
+        {loading ? (
+          <Skeleton className='h-8 w-8 rounded-xl' />
+        ) : (
+          <img
+            src={logo}
+            alt={t('Logo')}
+            className='h-8 w-8 shrink-0 object-contain'
+          />
+        )}
         {loading ? (
           <Skeleton className='h-6 w-24' />
         ) : (
-          <h1 className='text-sm font-semibold tracking-tight'>{systemName}</h1>
+          <h1
+            className={cn(
+              'text-xl font-semibold tracking-tight sm:text-2xl',
+              isBrandWordmark && 'or-brand-wordmark text-[1.14rem] tracking-[0.14em] sm:text-[1.28rem]'
+            )}
+          >
+            {systemName}
+          </h1>
         )}
       </Link>
       <div className='container flex items-center pt-16 sm:pt-0'>

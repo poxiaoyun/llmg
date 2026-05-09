@@ -4,12 +4,23 @@ export function applyFaviconToDom(url: string) {
     const next = new URL(url, window.location.href).href
     const existing =
       document.querySelectorAll<HTMLLinkElement>('link[rel~="icon"]')
-    if (existing.length === 1 && existing[0].href === next) return
-    const link = document.createElement('link')
-    link.rel = 'icon'
-    link.href = url
+    if (
+      existing.length >= 1 &&
+      Array.from(existing).every((link) => link.href === next)
+    ) {
+      return
+    }
     existing.forEach((l) => l.remove())
-    document.head.appendChild(link)
+
+    const primary = document.createElement('link')
+    primary.rel = 'icon'
+    primary.href = url
+    document.head.appendChild(primary)
+
+    const shortcut = document.createElement('link')
+    shortcut.rel = 'shortcut icon'
+    shortcut.href = url
+    document.head.appendChild(shortcut)
   } catch {
     // Ignore malformed URLs
   }

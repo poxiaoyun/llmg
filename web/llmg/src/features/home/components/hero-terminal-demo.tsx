@@ -133,6 +133,7 @@ export function HeroTerminalDemo() {
   const [visibleLines, setVisibleLines] = useState<string[]>([])
   const [streamDone, setStreamDone] = useState(false)
   const streamTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const rotateTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const demo = API_DEMOS[activeIndex]
   const accent = ACCENT_CLASSES[demo.accent]
@@ -190,8 +191,24 @@ export function HeroTerminalDemo() {
     }
   }, [demo])
 
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+    if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current)
+    if (!streamDone || mq.matches) return
+
+    rotateTimerRef.current = setTimeout(() => {
+      setActiveIndex((prev) => (prev + 1) % API_DEMOS.length)
+    }, 1800)
+
+    return () => {
+      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current)
+    }
+  }, [streamDone])
+
   const handleSelect = (index: number) => {
     if (index === activeIndex) return
+    if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current)
     setActiveIndex(index)
   }
 

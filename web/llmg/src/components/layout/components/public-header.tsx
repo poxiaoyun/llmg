@@ -64,6 +64,7 @@ export function PublicHeader(props: PublicHeaderProps) {
   const user = auth.user
   const isAuthenticated = !!user
   const displaySiteName = customSiteName || systemName
+  const isBrandWordmark = displaySiteName.trim().toUpperCase() === 'LLMG'
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
 
   useEffect(() => {
@@ -85,24 +86,24 @@ export function PublicHeader(props: PublicHeaderProps) {
       <header className='bg-background/85 fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl'>
         <div
           className={cn(
-            'mx-auto max-w-7xl px-3 transition-colors duration-200 md:px-6',
+            'mx-auto max-w-7xl px-4 transition-colors duration-200 md:px-6',
             props.className,
             scrolled && 'bg-background/40'
           )}
         >
           <nav
             className={cn(
-              'flex h-14 items-center justify-between transition-colors duration-200'
+              'flex h-[var(--app-header-height,4rem)] items-center justify-between gap-4 transition-colors duration-200'
             )}
           >
-            {/* Logo */}
-            <Link
-              to={homeUrl}
-              className='group text-foreground flex shrink-0 items-center gap-2.5'
-            >
-              <div className='bg-primary/10 ring-primary/20 group-hover:bg-primary/15 flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md ring-1 transition-colors duration-200'>
+            <div className='flex min-w-0 items-center gap-4 md:gap-6'>
+              {/* Logo */}
+              <Link
+                to={homeUrl}
+                className='group text-foreground flex shrink-0 items-center gap-3'
+              >
                 {loading ? (
-                  <Skeleton className='size-full rounded-md' />
+                  <Skeleton className='size-9 rounded-xl' />
                 ) : customLogo ? (
                   customLogo
                 ) : (
@@ -110,48 +111,55 @@ export function PublicHeader(props: PublicHeaderProps) {
                     src={systemLogo}
                     loading={loading}
                     logoLoaded={logoLoaded}
-                    className='size-4.5 rounded-sm object-contain'
+                    className='size-7 shrink-0 object-contain md:size-8'
                   />
                 )}
-              </div>
-              <span className='text-sm font-semibold tracking-tight text-current'>
-                {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
-              </span>
-            </Link>
+                <span
+                  className={cn(
+                    'text-xl font-semibold tracking-tight text-current md:text-2xl',
+                    isBrandWordmark && 'or-brand-wordmark text-[1.14rem] tracking-[0.14em] md:text-[1.34rem]'
+                  )}
+                >
+                  {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
+                </span>
+              </Link>
 
-            {/* Desktop nav */}
-            <div className='hidden items-center gap-0.5 sm:flex'>
-              {links.map((link, i) => {
-                const isActive = pathname === link.href
-                if (link.external) {
+              {/* Desktop nav */}
+              <div className='hidden items-center gap-0.5 sm:flex'>
+                {links.map((link, i) => {
+                  const isActive = pathname === link.href
+                  if (link.external) {
+                    return (
+                      <a
+                        key={i}
+                        href={link.href}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='text-muted-foreground hover:text-foreground rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200'
+                      >
+                        {t(link.title)}
+                      </a>
+                    )
+                  }
                   return (
-                    <a
+                    <Link
                       key={i}
-                      href={link.href}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-muted-foreground hover:text-foreground rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors duration-200'
+                      to={link.href}
+                      className={cn(
+                        'rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200',
+                        isActive
+                          ? 'bg-muted text-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
                     >
                       {t(link.title)}
-                    </a>
+                    </Link>
                   )
-                }
-                return (
-                  <Link
-                    key={i}
-                    to={link.href}
-                    className={cn(
-                      'rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors duration-200',
-                      isActive
-                        ? 'bg-muted text-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {t(link.title)}
-                  </Link>
-                )
-              })}
+                })}
+              </div>
+            </div>
 
+            <div className='hidden items-center gap-0.5 sm:flex'>
               {(showLanguageSwitcher ||
                 showThemeSwitch ||
                 showNotifications) && (
@@ -177,7 +185,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   ) : (
                     <Button
                       size='sm'
-                      className='h-8 px-3.5 text-xs font-medium'
+                      className='h-9 px-4 text-sm font-medium'
                       render={<Link to='/sign-in' />}
                     >
                       {t('Sign in')}
@@ -197,7 +205,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                 type='button'
                 variant='ghost'
                 size='icon'
-                className='size-9'
+                className='size-10'
                 onClick={() => setMobileOpen((v) => !v)}
                 aria-label={t('Toggle navigation menu')}
               >

@@ -12,25 +12,25 @@ interface HeroProps {
 
 export function Hero(props: HeroProps) {
   const { t } = useTranslation()
-  const { systemName } = useSystemConfig()
+  useSystemConfig()
   const modelRows = [
     {
-      model: 'openai/gpt-4.1',
+      model: 'openai/gpt-5.4',
       provider: 'OpenAI',
-      context: '1M',
-      price: '$2.00/M',
+      context: 'v5.4',
+      price: t('Latest'),
     },
     {
-      model: 'anthropic/claude-sonnet',
+      model: 'anthropic/claude-sonnet-4-6',
       provider: 'Anthropic',
-      context: '200K',
-      price: '$3.00/M',
+      context: 'v4.6',
+      price: t('Latest'),
     },
     {
-      model: 'google/gemini-pro',
+      model: 'google/gemini-2.5-pro',
       provider: 'Google',
-      context: '1M',
-      price: '$1.25/M',
+      context: 'v2.5',
+      price: t('Stable'),
     },
   ]
 
@@ -38,21 +38,17 @@ export function Hero(props: HeroProps) {
     <section className='or-grid-bg relative z-10 overflow-hidden border-b px-4 pt-28 pb-12 md:pt-32 md:pb-16'>
       <div className='mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,1fr)]'>
         <div className='flex max-w-3xl flex-col items-start'>
-          <div className='or-eyebrow mb-4'>{t('AI Gateway')}</div>
           <h1
             className='landing-animate-fade-up text-[clamp(2.25rem,7vw,4.75rem)] leading-[0.98] font-semibold tracking-tight text-balance'
             style={{ animationDelay: '0ms' }}
           >
-            {t('Unified interface for all your AI models')}
+            {t('The Infinite In One.')}
           </h1>
           <p
             className='landing-animate-fade-up text-muted-foreground mt-5 max-w-xl text-base leading-relaxed opacity-0 md:text-lg'
             style={{ animationDelay: '80ms' }}
           >
-            {systemName}{' '}
-            {t(
-              'is an open-source AI API gateway for self-hosted deployments. Connect multiple upstream services, manage models, keys, quotas, logs, and routing policies in one place.'
-            )}
+            {t('One layer between you and every AI.')}
           </p>
           <div
             className='landing-animate-fade-up mt-8 flex flex-wrap items-center gap-3 opacity-0'

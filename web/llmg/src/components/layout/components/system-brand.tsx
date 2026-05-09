@@ -34,6 +34,7 @@ export function SystemBrand(props: SystemBrandProps) {
 
   const variant = props.variant ?? 'sidebar'
   const name = normalizeSystemName(status?.system_name || props.defaultName)
+  const isBrandWordmark = name.trim().toUpperCase() === 'LLMG'
   const version =
     status?.version || props.defaultVersion || t('Unknown version')
 
@@ -43,18 +44,23 @@ export function SystemBrand(props: SystemBrandProps) {
         to='/'
         aria-label={t('Go to home')}
         className={cn(
-          'text-foreground inline-flex h-8 items-center gap-2 rounded-md px-1.5 text-sm font-semibold tracking-tight transition-colors outline-none select-none',
+          'text-foreground inline-flex h-10 items-center gap-3 rounded-lg px-2 text-base font-semibold tracking-tight transition-colors outline-none select-none md:h-11 md:text-lg',
           'hover:bg-accent focus-visible:ring-ring/40 focus-visible:ring-2'
         )}
       >
-        <div className='bg-primary/10 ring-primary/20 flex size-6 items-center justify-center overflow-hidden rounded-md ring-1'>
-          <img
-            src={logo}
-            alt={t('Logo')}
-            className='size-4.5 rounded-sm object-cover'
-          />
-        </div>
-        <span className='max-w-[12rem] truncate'>{name}</span>
+        <img
+          src={logo}
+          alt={t('Logo')}
+          className='size-6 shrink-0 object-contain md:size-7'
+        />
+        <span
+          className={cn(
+            'max-w-[14rem] truncate text-[1.02rem] md:text-[1.08rem]',
+            isBrandWordmark && 'or-brand-wordmark text-[1.02rem] tracking-[0.12em] md:text-[1.14rem]'
+          )}
+        >
+          {name}
+        </span>
       </Link>
     )
   }
