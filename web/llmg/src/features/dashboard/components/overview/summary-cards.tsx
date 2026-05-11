@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { ArrowRight, CreditCard } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { getCurrencyLabel, isCurrencyDisplayEnabled } from '@/lib/currency'
@@ -136,83 +136,66 @@ export function SummaryCards() {
     ...summaryValues,
     currencyEnabled,
     currencyLabel,
-  }).map((config, index) => {
-    const tones = ['rose', 'teal', 'gray'] as const
-
-    return {
-      title: config.title,
-      value: config.value,
-      desc: config.description,
-      icon: config.icon,
-      tone: tones[index] ?? 'gray',
-      sparkline:
-        config.key === 'balance'
-          ? sparklineData.balance
-          : config.key === 'usage'
-            ? sparklineData.usage
-            : sparklineData.requests,
-    }
   })
+    .map((config, index) => {
+      const tones = ['rose', 'teal', 'gray'] as const
+
+      return {
+        key: config.key,
+        title: config.title,
+        value: config.value,
+        desc: config.description,
+        icon: config.icon,
+        tone: tones[index] ?? 'gray',
+        sparkline:
+          config.key === 'balance'
+            ? sparklineData.balance
+            : config.key === 'usage'
+              ? sparklineData.usage
+              : sparklineData.requests,
+      }
+    })
 
   return (
-    <div className='bg-card overflow-hidden rounded-lg border shadow-none'>
-      <div className='grid xl:grid-cols-[minmax(0,1fr)_19rem]'>
-        <div className='flex flex-col gap-3 p-4 sm:p-5'>
-          <div className='flex flex-wrap items-start justify-between gap-3'>
-            <div className='flex flex-col gap-1'>
-              <h3 className='text-base font-semibold'>
-                {t('Usage at a glance')}
-              </h3>
-              <p className='text-muted-foreground text-sm'>
-                {t('Monitor balance, usage, and request volume')}
-              </p>
-            </div>
-          </div>
-          <StaggerContainer className='grid gap-3 md:grid-cols-3'>
-            {items.map((it) => (
-              <StaggerItem
-                key={it.title}
-                className='bg-background/60 rounded-lg border p-3'
-              >
-                <StatCard
-                  title={it.title}
-                  value={it.value}
-                  description={it.desc}
-                  icon={it.icon}
-                  tone={it.tone}
-                  sparkline={it.sparkline}
-                  loading={loading}
-                />
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+    <div className='bg-card overflow-hidden rounded-lg border p-4 shadow-none sm:p-5'>
+      <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-1'>
+          <h3 className='text-base font-semibold'>{t('Usage at a glance')}</h3>
+          <p className='text-muted-foreground text-sm'>
+            {t('Monitor balance, usage, and request volume')}
+          </p>
         </div>
-
-        <div className='bg-warning/10 flex flex-col justify-between gap-5 border-t p-4 sm:p-5 xl:border-t-0 xl:border-l'>
-          <div className='flex flex-col gap-2'>
-            <div className='text-muted-foreground text-sm'>
-              {t('Credit remaining')}
-            </div>
-            <div className='flex items-center gap-2'>
-              <span className='font-mono text-2xl font-semibold tracking-tight'>
-                {summaryValues.remainDisplay}
-              </span>
-              <CreditCard
-                className='text-muted-foreground size-4'
-                aria-hidden='true'
+        <StaggerContainer className='grid gap-3 lg:grid-cols-3'>
+          {items.map((it) => (
+            <StaggerItem
+              key={it.title}
+              className='bg-background/60 rounded-lg border p-3'
+            >
+              <StatCard
+                title={it.title}
+                value={it.value}
+                description={it.desc}
+                icon={it.icon}
+                tone={it.tone}
+                sparkline={it.sparkline}
+                loading={loading}
+                action={
+                  it.key === 'balance' ? (
+                    <Button
+                      size='sm'
+                      variant='outline'
+                      className='h-7 gap-1 px-2 text-xs'
+                      render={<Link to='/wallet' />}
+                    >
+                      {t('Recharge')}
+                      <ArrowRight className='size-3.5' aria-hidden='true' />
+                    </Button>
+                  ) : undefined
+                }
               />
-            </div>
-            <p className='text-muted-foreground text-sm leading-relaxed'>
-              {currencyEnabled
-                ? `${t('Displayed in')} ${currencyLabel}`
-                : t('Balance is shown in quota units')}
-            </p>
-          </div>
-          <Button className='justify-between' render={<Link to='/wallet' />}>
-            <span>{t('Recharge')}</span>
-            <ArrowRight data-icon='inline-end' />
-          </Button>
-        </div>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
       </div>
     </div>
   )

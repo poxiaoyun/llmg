@@ -3,16 +3,13 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import {
   ArrowRight,
-  BookOpen,
   Check,
   ChevronDown,
   ChevronUp,
   Circle,
   CreditCard,
-  FileText,
   KeyRound,
   ListChecks,
-  Play,
   RadioTower,
   ShieldCheck,
   TerminalSquare,
@@ -24,7 +21,6 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { getUserModels } from '@/lib/api'
 import { MOTION_TRANSITION } from '@/lib/motion'
-import { ROLE } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { CopyButton } from '@/components/copy-button'
@@ -35,11 +31,7 @@ import {
 import { fetchTokenKey, getApiKeys } from '@/features/keys/api'
 import type { ApiKey } from '@/features/keys/types'
 import { useApiInfo } from '../../hooks/use-status-data'
-import { AnnouncementsPanel } from './announcements-panel'
-import { ApiInfoPanel } from './api-info-panel'
-import { FAQPanel } from './faq-panel'
 import { SummaryCards } from './summary-cards'
-import { UptimePanel } from './uptime-panel'
 
 const SETUP_GUIDE_VISIBILITY_STORAGE_KEY =
   'dashboard_overview_setup_guide_expanded'
@@ -69,14 +61,6 @@ interface StartStep {
   to: DashboardActionPath
   icon: LucideIcon
   completed: boolean
-}
-
-interface QuickAction {
-  title: string
-  description: string
-  to: DashboardActionPath
-  icon: LucideIcon
-  adminOnly?: boolean
 }
 
 interface RequestExample {
@@ -360,46 +344,6 @@ function RequestPreview(props: {
   )
 }
 
-function QuickActionItem(props: { action: QuickAction }) {
-  const Icon = props.action.icon
-
-  return (
-    <Button
-      variant='outline'
-      className='h-auto justify-start px-3 py-3 text-left'
-      render={<Link to={props.action.to} />}
-    >
-      <span className='bg-muted/40 flex size-9 shrink-0 items-center justify-center rounded-md border'>
-        <Icon className='size-4' aria-hidden='true' />
-      </span>
-      <span className='flex min-w-0 flex-1 flex-col gap-0.5'>
-        <span className='truncate text-sm font-medium'>
-          {props.action.title}
-        </span>
-        <span className='text-muted-foreground line-clamp-2 text-xs leading-relaxed'>
-          {props.action.description}
-        </span>
-      </span>
-    </Button>
-  )
-}
-
-function CompactQuickAction(props: { action: QuickAction }) {
-  const Icon = props.action.icon
-
-  return (
-    <Button
-      variant='outline'
-      size='sm'
-      className='bg-background/70 h-8 min-w-24 gap-1.5 px-2.5'
-      render={<Link to={props.action.to} />}
-    >
-      <Icon data-icon='inline-start' />
-      <span>{props.action.title}</span>
-    </Button>
-  )
-}
-
 export function OverviewDashboard() {
   const { t } = useTranslation()
   const user = useAuthStore((state) => state.auth.user)
@@ -411,7 +355,6 @@ export function OverviewDashboard() {
   const requestCount = Number(user?.request_count ?? 0)
   const remainQuota = Number(user?.quota ?? 0)
   const usedQuota = Number(user?.used_quota ?? 0)
-  const isAdmin = Boolean(user?.role && user.role >= ROLE.ADMIN)
 
   const apiKeysQuery = useQuery({
     queryKey: ['dashboard', 'overview', 'api-keys'],
@@ -474,42 +417,6 @@ export function OverviewDashboard() {
     [preferredKey, remainQuota, requestCount, t, usedQuota]
   )
 
-  const quickActions = useMemo<QuickAction[]>(
-    () => [
-      {
-        title: t('Playground'),
-        description: t('Test models and prompts from the browser'),
-        to: '/playground',
-        icon: Play,
-      },
-      {
-        title: t('Channels'),
-        description: t('Configure upstream providers and routing.'),
-        to: '/channels',
-        icon: RadioTower,
-        adminOnly: true,
-      },
-      {
-        title: t('Usage Logs'),
-        description: t('Inspect requests, errors, and billing details'),
-        to: '/usage-logs',
-        icon: FileText,
-      },
-      {
-        title: t('Pricing'),
-        description: t('Review model rates before scaling traffic'),
-        to: '/pricing',
-        icon: BookOpen,
-      },
-    ],
-    [t]
-  )
-
-  const visibleQuickActions = useMemo(
-    () => quickActions.filter((action) => !action.adminOnly || isAdmin),
-    [isAdmin, quickActions]
-  )
-
   const heroSignals = useMemo<HeroSignal[]>(
     () => [
       {
@@ -564,8 +471,10 @@ export function OverviewDashboard() {
 
   return (
     <div className='flex flex-col gap-4'>
+      <SummaryCards />
+
       {setupGuideExpanded ? (
-        <CardStaggerContainer className='grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]'>
+        <CardStaggerContainer>
           <CardStaggerItem className='bg-card h-full overflow-hidden rounded-lg border shadow-none'>
             <div className='relative h-full overflow-hidden p-4 sm:p-5'>
               <SetupGuideBackdrop />
@@ -621,24 +530,6 @@ export function OverviewDashboard() {
               </div>
             </div>
           </CardStaggerItem>
-
-          <CardStaggerItem className='bg-card h-full rounded-lg border p-4 shadow-none sm:p-5'>
-            <div className='flex h-full flex-col gap-4'>
-              <div className='flex flex-col gap-1'>
-                <div className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
-                  {t('Recommended actions')}
-                </div>
-                <h3 className='text-lg font-semibold tracking-tight'>
-                  {t('Keep the platform ready')}
-                </h3>
-              </div>
-              <div className='grid gap-2'>
-                {visibleQuickActions.map((action) => (
-                  <QuickActionItem key={action.title} action={action} />
-                ))}
-              </div>
-            </div>
-          </CardStaggerItem>
         </CardStaggerContainer>
       ) : (
         <CardStaggerContainer>
@@ -675,9 +566,6 @@ export function OverviewDashboard() {
                 </div>
 
                 <div className='flex flex-wrap items-center gap-2'>
-                  {visibleQuickActions.map((action) => (
-                    <CompactQuickAction key={action.title} action={action} />
-                  ))}
                   <Button
                     variant='outline'
                     size='sm'
@@ -693,25 +581,6 @@ export function OverviewDashboard() {
           </CardStaggerItem>
         </CardStaggerContainer>
       )}
-
-      <SummaryCards />
-
-      <CardStaggerContainer className='grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]'>
-        <div className='grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-2'>
-          <CardStaggerItem>
-            <ApiInfoPanel />
-          </CardStaggerItem>
-          <CardStaggerItem>
-            <AnnouncementsPanel />
-          </CardStaggerItem>
-          <CardStaggerItem>
-            <FAQPanel />
-          </CardStaggerItem>
-        </div>
-        <CardStaggerItem>
-          <UptimePanel />
-        </CardStaggerItem>
-      </CardStaggerContainer>
     </div>
   )
 }

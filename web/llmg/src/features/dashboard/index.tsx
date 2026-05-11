@@ -217,9 +217,13 @@ export function Dashboard() {
       <SectionPageLayout.Content>
         <div className='space-y-3 sm:space-y-4'>
           {activeSection !== 'overview' && (
-            <div className='flex flex-wrap items-center justify-between gap-1.5 sm:gap-2'>
+            <div className='flex w-full flex-wrap items-center gap-2 sm:gap-3'>
               {showSectionTabs ? (
-                <Tabs value={activeSection} onValueChange={handleSectionChange}>
+                <Tabs
+                  value={activeSection}
+                  onValueChange={handleSectionChange}
+                  className='min-w-0'
+                >
                   <TabsList className='h-auto max-w-full flex-wrap justify-start'>
                     {visibleSections.map((section) => (
                       <TabsTrigger key={section} value={section}>
@@ -228,11 +232,9 @@ export function Dashboard() {
                     ))}
                   </TabsList>
                 </Tabs>
-              ) : (
-                <div />
-              )}
+              ) : null}
               {modelActions != null && (
-                <div className='flex shrink-0 flex-wrap items-center gap-1.5 sm:gap-2'>
+                <div className='ml-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2'>
                   {modelActions}
                 </div>
               )}

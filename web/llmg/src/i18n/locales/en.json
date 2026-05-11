@@ -1,5 +1,70 @@
 {
   "translation": {
+    "docs": {
+      "sections": {
+        "gettingStarted": "Getting started",
+        "cliAgents": "CLI agents",
+        "editorIntegration": "Editor integration",
+        "reference": "Reference"
+      },
+      "groups": {
+        "cliAgents": "CLI agents"
+      },
+      "shell": {
+        "searchPlaceholder": "Search documentation...",
+        "copyPage": "Copy page",
+        "pickAPathTitle": "Pick a starting point",
+        "pickAPathDescription": "Choose the guide that matches the client or workflow you want to connect first.",
+        "openGuide": "Open guide",
+        "previous": "Previous",
+        "next": "Next",
+        "noMatches": "No matching documents.",
+        "onThisPage": "On this page",
+        "scrollToTop": "Scroll to top"
+      },
+      "pages": {
+        "overview": {
+          "title": "Overview",
+          "summary": "Understand how to connect to the LLMG gateway before choosing a client path.",
+          "description": "LLMG gives you one gateway endpoint so you can bring the same API key and base URL to multiple model providers and compatible clients."
+        },
+        "quickstart": {
+          "title": "Quickstart",
+          "summary": "Create a key, copy the base URL, and send a first request to verify the connection.",
+          "description": "Start here if this is your first time integrating LLMG. It covers API keys, the endpoint layout, connectivity checks, and model discovery."
+        },
+        "cli-overview": {
+          "title": "Overview",
+          "summary": "Choose the right CLI guide before wiring a terminal-based AI workflow to LLMG.",
+          "description": "This section is for command-line agents. It focuses on environment variables, config files, and the shortest smoke tests."
+        },
+        "codex-cli": {
+          "title": "Codex CLI",
+          "summary": "Point ~/.codex/config.toml at LLMG and switch the default provider to your gateway.",
+          "description": "Use this guide for Codex CLI and other tools that share the same Codex configuration format."
+        },
+        "claude-code-cli": {
+          "title": "Claude Code CLI",
+          "summary": "Route Claude Code to the LLMG Messages endpoint with Anthropic-compatible variables.",
+          "description": "Use this guide if you run Claude Code locally and need ANTHROPIC_BASE_URL plus ANTHROPIC_AUTH_TOKEN configured correctly."
+        },
+        "opencode-cli": {
+          "title": "OpenCode CLI",
+          "summary": "Add an LLMG provider block to opencode.jsonc and pick a model that exists in your gateway.",
+          "description": "Use this guide if OpenCode is your terminal client and you need a clean provider, baseURL, and apiKey setup."
+        },
+        "vscode-extension": {
+          "title": "VS Code extension",
+          "summary": "Reuse your Codex-style setup inside VS Code so editor requests flow through LLMG.",
+          "description": "Best for the OpenAI or Codex extensions in VS Code. The key pieces are your environment variables and ~/.codex/config.toml."
+        },
+        "api-reference": {
+          "title": "API reference",
+          "summary": "Review authentication, endpoints, request fields, response shapes, and model discovery.",
+          "description": "Use this when you already have a key and endpoint and need the protocol details to finish a production integration."
+        }
+      }
+    },
     "360": "360",
     "1000": "1000",
     "10000": "10000",
@@ -945,6 +1010,7 @@
     "Copy Key": "Copy Key",
     "Copy Link": "Copy Link",
     "Copy model name": "Copy model name",
+    "Cache price": "Cache price",
     "Copy model names": "Copy model names",
     "Copy prompt": "Copy prompt",
     "Copy ready-to-run curl": "Copy ready-to-run curl",
@@ -2382,6 +2448,7 @@
     "MokaAI": "MokaAI",
     "Monitor": "Monitor",
     "Monitor balance, usage, and request volume": "Monitor balance, usage, and request volume",
+    "Monitor usage and request volume": "Monitor usage and request volume",
     "Monitored relay requests": "Monitored relay requests",
     "Monitoring & Alerts": "Monitoring & Alerts",
     "Month": "Month",
@@ -3182,6 +3249,7 @@
     "Referral link:": "Referral link:",
     "Referral Program": "Referral Program",
     "Refine models by provider, group, type, and tags.": "Refine models by provider, group, type, and tags.",
+    "Refine models by provider and endpoint type.": "Refine models by provider and endpoint type.",
     "Refresh": "Refresh",
     "Refresh Cache": "Refresh Cache",
     "Refresh credential": "Refresh credential",
@@ -4435,6 +4503,23 @@
     "Zero retention": "Zero retention",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+    "Browse docs": "Browse docs",
+    "Choose the entry point that matches how you run LLMG today.": "Choose the entry point that matches how you run LLMG today.",
+    "Clear search": "Clear search",
+    "Copy page link": "Copy page link",
+    "Documentation": "Documentation",
+    "Featured paths": "Featured paths",
+    "Last updated on {{date}}": "Last updated on {{date}}",
+    "Next": "Next",
+    "No matching documents": "No matching documents",
+    "On this page": "On this page",
+    "Open console": "Open console",
+    "Previous": "Previous",
+    "Search docs": "Search docs",
+    "Search guides, APIs, and console workflows": "Search guides, APIs, and console workflows",
+    "Search quickstart, client setup, and API reference": "Search quickstart, client setup, and API reference",
+    "Try a broader keyword or jump back to overview.": "Try a broader keyword or jump back to overview.",
+    "Choose the guide that matches the client or workflow you want to connect first.": "Choose the guide that matches the client or workflow you want to connect first."
   }
 }

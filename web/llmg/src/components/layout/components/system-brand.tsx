@@ -4,11 +4,13 @@ import { cn } from '@/lib/utils'
 import { normalizeSystemName } from '@/lib/constants'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { HeaderLogo } from './header-logo'
 
 type SystemBrandProps = {
   defaultName?: string
@@ -30,10 +32,12 @@ type SystemBrandProps = {
 export function SystemBrand(props: SystemBrandProps) {
   const { t } = useTranslation()
   const { status } = useStatus()
-  const { logo } = useSystemConfig()
+  const { systemName, logo, loading, logoLoaded } = useSystemConfig()
 
   const variant = props.variant ?? 'sidebar'
-  const name = normalizeSystemName(status?.system_name || props.defaultName)
+  const name = normalizeSystemName(
+    systemName || status?.system_name || props.defaultName
+  )
   const isBrandWordmark = name.trim().toUpperCase() === 'LLMG'
   const version =
     status?.version || props.defaultVersion || t('Unknown version')
@@ -43,23 +47,27 @@ export function SystemBrand(props: SystemBrandProps) {
       <Link
         to='/'
         aria-label={t('Go to home')}
-        className={cn(
-          'text-foreground inline-flex h-10 items-center gap-3 rounded-lg px-2 text-base font-semibold tracking-tight transition-colors outline-none select-none md:h-11 md:text-lg',
-          'hover:bg-accent focus-visible:ring-ring/40 focus-visible:ring-2'
-        )}
+        className='group text-foreground flex shrink-0 items-center gap-3'
       >
-        <img
-          src={logo}
-          alt={t('Logo')}
-          className='size-6 shrink-0 object-contain md:size-7'
-        />
+        {loading ? (
+          <Skeleton className='size-9 rounded-xl' />
+        ) : (
+          <HeaderLogo
+            src={logo}
+            alt={t('Logo')}
+            loading={loading}
+            logoLoaded={logoLoaded}
+            className='size-7 shrink-0 object-contain md:size-8'
+          />
+        )}
         <span
           className={cn(
-            'max-w-[14rem] truncate text-[1.02rem] md:text-[1.08rem]',
-            isBrandWordmark && 'or-brand-wordmark text-[1.02rem] tracking-[0.12em] md:text-[1.14rem]'
+            'text-xl font-semibold tracking-tight text-current md:text-2xl',
+            isBrandWordmark &&
+              'or-brand-wordmark text-[1.14rem] tracking-[0.14em] md:text-[1.34rem]'
           )}
         >
-          {name}
+          {loading ? <Skeleton className='h-4 w-16' /> : name}
         </span>
       </Link>
     )

@@ -86,7 +86,7 @@ export function PublicHeader(props: PublicHeaderProps) {
       <header className='bg-background/85 fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl'>
         <div
           className={cn(
-            'mx-auto max-w-7xl px-4 transition-colors duration-200 md:px-6',
+            'w-full px-4 transition-colors duration-200 md:px-6',
             props.className,
             scrolled && 'bg-background/40'
           )}

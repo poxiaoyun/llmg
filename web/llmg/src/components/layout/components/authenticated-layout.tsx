@@ -23,7 +23,7 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
           <SidebarProvider defaultOpen={defaultOpen} className='flex-col'>
             <SkipToMain />
             <AppHeader />
-            <div className='flex min-h-0 w-full flex-1'>
+            <div className='flex min-h-0 w-full flex-1 pt-[var(--app-header-height,4rem)]'>
               <AppSidebar />
               <SidebarInset
                 className={cn(

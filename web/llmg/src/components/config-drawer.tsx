@@ -4,9 +4,6 @@ import { RadioGroup as Radio } from '@base-ui/react/radio-group'
 import { CircleCheck, Palette, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { IconDir } from '@/assets/custom/icon-dir'
-import { IconLayoutCompact } from '@/assets/custom/icon-layout-compact'
-import { IconLayoutDefault } from '@/assets/custom/icon-layout-default'
-import { IconLayoutFull } from '@/assets/custom/icon-layout-full'
 import { IconSidebarFloating } from '@/assets/custom/icon-sidebar-floating'
 import { IconSidebarInset } from '@/assets/custom/icon-sidebar-inset'
 import { IconSidebarSidebar } from '@/assets/custom/icon-sidebar-sidebar'
@@ -22,7 +19,7 @@ import {
 } from '@/lib/theme-customization'
 import { cn } from '@/lib/utils'
 import { useDirection } from '@/context/direction-provider'
-import { type Collapsible, useLayout } from '@/context/layout-provider'
+import { useLayout } from '@/context/layout-provider'
 import { useThemeCustomization } from '@/context/theme-customization-provider'
 import { useTheme } from '@/context/theme-provider'
 import { Button } from '@/components/ui/button'
@@ -83,7 +80,6 @@ export function ConfigDrawer() {
           <RadiusConfig />
           <ScaleConfig />
           <SidebarConfig />
-          <LayoutConfig />
           <ContentLayoutConfig />
           <DirConfig />
         </div>
@@ -459,58 +455,6 @@ function SidebarConfig() {
       </Radio>
       <div id='sidebar-description' className='sr-only'>
         {t('Choose between inset, floating, or standard sidebar layout')}
-      </div>
-    </div>
-  )
-}
-
-function LayoutConfig() {
-  const { t } = useTranslation()
-  const { open, setOpen } = useSidebar()
-  const { defaultCollapsible, collapsible, setCollapsible } = useLayout()
-
-  const radioState = open ? 'default' : collapsible
-
-  return (
-    <div className='max-md:hidden'>
-      <SectionTitle
-        title={t('Layout')}
-        showReset={radioState !== 'default'}
-        onReset={() => {
-          setOpen(true)
-          setCollapsible(defaultCollapsible)
-        }}
-      />
-      <Radio
-        value={radioState}
-        onValueChange={(v) => {
-          if (v === 'default') {
-            setOpen(true)
-            return
-          }
-          setOpen(false)
-          setCollapsible(v as Collapsible)
-        }}
-        className='grid w-full max-w-md grid-cols-3 gap-4'
-        aria-label={t('Select layout style')}
-        aria-describedby='layout-description'
-      >
-        {[
-          { value: 'default', label: t('Default'), icon: IconLayoutDefault },
-          { value: 'icon', label: t('Compact'), icon: IconLayoutCompact },
-          {
-            value: 'offcanvas',
-            label: t('Full layout'),
-            icon: IconLayoutFull,
-          },
-        ].map((item) => (
-          <RadioGroupItem key={item.value} item={item} />
-        ))}
-      </Radio>
-      <div id='layout-description' className='sr-only'>
-        {t(
-          'Choose between default expanded, compact icon-only, or full layout mode'
-        )}
       </div>
     </div>
   )

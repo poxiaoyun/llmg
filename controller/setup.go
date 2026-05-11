@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"strings"
 	"time"
 
 	"github.com/QuantumNous/new-api/common"
@@ -23,6 +24,11 @@ type SetupRequest struct {
 	SelfUseModeEnabled bool   `json:"SelfUseModeEnabled"`
 	DemoSiteEnabled    bool   `json:"DemoSiteEnabled"`
 }
+
+const (
+	defaultSetupAdminUsername = "admin"
+	defaultSetupAdminPassword = "demo!@#admin"
+)
 
 func GetSetup(c *gin.Context) {
 	setup := Setup{
@@ -73,6 +79,7 @@ func PostSetup(c *gin.Context) {
 		})
 		return
 	}
+	applyDefaultSetupCredentials(&req)
 
 	// If root doesn't exist, validate and create admin account
 	if !rootExists {
@@ -179,4 +186,14 @@ func boolToString(b bool) string {
 		return "true"
 	}
 	return "false"
+}
+
+func applyDefaultSetupCredentials(req *SetupRequest) {
+	if strings.TrimSpace(req.Username) == "" {
+		req.Username = defaultSetupAdminUsername
+	}
+	if req.Password == "" && req.ConfirmPassword == "" {
+		req.Password = defaultSetupAdminPassword
+		req.ConfirmPassword = defaultSetupAdminPassword
+	}
 }

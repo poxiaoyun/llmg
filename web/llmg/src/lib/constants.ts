@@ -7,6 +7,8 @@ export const DEFAULT_SYSTEM_NAME = 'LLMG'
 export const DEFAULT_LOGO = '/logo.svg'
 export const DEFAULT_FAVICON = '/favicon.ico?v=2'
 export const DEFAULT_TITLE_SUFFIX = 'The Infinite In One.'
+export const DEFAULT_ADMIN_USERNAME = 'admin'
+export const DEFAULT_ADMIN_PASSWORD = 'demo!@#admin'
 
 export function formatDocumentTitle(name?: string | null): string {
   return `${normalizeSystemName(name)} — ${DEFAULT_TITLE_SUFFIX}`

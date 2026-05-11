@@ -6,7 +6,7 @@ import { ROLE } from '@/lib/roles'
 import { useLayout } from '@/context/layout-provider'
 import { useSidebarConfig } from '@/hooks/use-sidebar-config'
 import { useSidebarData } from '@/hooks/use-sidebar-data'
-import { Sidebar, SidebarContent, SidebarRail } from '@/components/ui/sidebar'
+import { Sidebar, SidebarContent } from '@/components/ui/sidebar'
 import { getNavGroupsForPath } from '../lib/workspace-registry'
 import { NavGroup } from './nav-group'
 
@@ -20,7 +20,7 @@ import { NavGroup } from './nav-group'
  */
 export function AppSidebar() {
   const { t } = useTranslation()
-  const { collapsible, variant } = useLayout()
+  const { variant } = useLayout()
   const { pathname } = useLocation()
   const userRole = useAuthStore((state) => state.auth.user?.role)
   const sidebarData = useSidebarData()
@@ -44,14 +44,13 @@ export function AppSidebar() {
   }, [configFilteredNavGroups, userRole])
 
   return (
-    <Sidebar collapsible={collapsible} variant={variant}>
+    <Sidebar collapsible='none' variant={variant}>
       <SidebarContent className='py-2'>
         {currentNavGroups.map((props) => {
           const key = props.id || props.title
           return <NavGroup key={key} {...props} />
         })}
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   )
 }

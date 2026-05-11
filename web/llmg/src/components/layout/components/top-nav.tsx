@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useRouterState } from '@tanstack/react-router'
 import { Menu } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,16 +21,20 @@ type TopNavProps = React.HTMLAttributes<HTMLElement> & {
  * 在大屏幕显示水平导航，在小屏幕显示下拉菜单
  */
 export function TopNav({ className, links, ...props }: TopNavProps) {
+  const { t } = useTranslation()
+  const routerState = useRouterState()
+  const pathname = routerState.location.pathname
+
   // 规范化链接，确保所有可选属性都有默认值
   const normalizedLinks = useMemo(
     () =>
       links.map((link) => ({
-        isActive: false,
+        isActive: pathname === link.href,
         disabled: false,
         external: false,
         ...link,
       })),
-    [links]
+    [links, pathname]
   )
 
   return (
@@ -55,7 +60,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                         rel='noopener noreferrer'
                         className={!isActive ? 'text-muted-foreground' : ''}
                       >
-                        {title}
+                        {t(title)}
                       </a>
                     ) : (
                       <Link
@@ -63,7 +68,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                         className={!isActive ? 'text-muted-foreground' : ''}
                         disabled={disabled}
                       >
-                        {title}
+                        {t(title)}
                       </Link>
                     )
                   }
@@ -77,7 +82,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
       {/* 桌面端水平导航 */}
       <nav
         className={cn(
-          'hidden items-center space-x-5 lg:flex xl:space-x-7',
+          'hidden items-center gap-0.5 lg:flex',
           className
         )}
         {...props}
@@ -89,18 +94,28 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
               href={href}
               target='_blank'
               rel='noopener noreferrer'
-              className={`hover:text-primary text-[15px] font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
+              className={cn(
+                'rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200',
+                isActive
+                  ? 'bg-muted text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
             >
-              {title}
+              {t(title)}
             </a>
           ) : (
             <Link
               key={`${title}-${href}`}
               to={href}
               disabled={disabled}
-              className={`hover:text-primary text-[15px] font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
+              className={cn(
+                'rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200',
+                isActive
+                  ? 'bg-muted text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
             >
-              {title}
+              {t(title)}
             </Link>
           )
         )}

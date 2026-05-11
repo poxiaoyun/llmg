@@ -1,3 +1,4 @@
+import { ThemeSwitch } from '@/components/theme-switch'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { ConfigDrawer } from '@/components/config-drawer'
@@ -64,6 +65,11 @@ type AppHeaderProps = {
    */
   showNotifications?: boolean
   /**
+   * Whether to show theme switch
+   * @default true
+   */
+  showThemeSwitch?: boolean
+  /**
    * Whether to show config drawer
    * @default true
    */
@@ -82,6 +88,7 @@ export function AppHeader({
   showSearch = true,
   rightContent,
   showNotifications = true,
+  showThemeSwitch = true,
   showConfigDrawer = true,
   showProfileDropdown = true,
 }: AppHeaderProps) {
@@ -95,29 +102,44 @@ export function AppHeader({
   return (
     <>
       <Header>
-        <SystemBrand variant='inline' />
+        <div className='flex min-w-0 items-center gap-4 md:gap-6'>
+          <SystemBrand variant='inline' />
 
-        {leftContent ? (
-          <div className='ms-2 flex items-center'>{leftContent}</div>
-        ) : null}
+          {leftContent || showTopNav ? (
+            <>
+              {leftContent ? <div className='flex items-center'>{leftContent}</div> : null}
+              {showTopNav && (
+                <div className='hidden lg:block'>
+                  <TopNav links={links} />
+                </div>
+              )}
+            </>
+          ) : null}
+        </div>
 
         {rightContent ?? (
           <div className='ms-auto flex items-center gap-1 sm:gap-2'>
-            {showTopNav && (
-              <div className='me-1 hidden lg:block'>
-                <TopNav links={links} />
-              </div>
+            {showSearch ? <Search className='hidden md:flex' /> : null}
+
+            {(showSearch || showNotifications || showThemeSwitch) && (
+              <div className='bg-border/40 mx-1 hidden h-4 w-px md:block' />
             )}
-            {showSearch && <Search />}
+
+            <LanguageSwitcher />
+            {showThemeSwitch && <ThemeSwitch />}
             {showNotifications && (
               <NotificationButton
                 unreadCount={notifications.unreadCount}
                 onClick={() => notifications.openDialog()}
               />
             )}
-            <LanguageSwitcher />
             {showConfigDrawer && <ConfigDrawer />}
-            {showProfileDropdown && <ProfileDropdown />}
+            {showProfileDropdown && (
+              <>
+                <div className='bg-border/40 mx-1 h-4 w-px' />
+                <ProfileDropdown />
+              </>
+            )}
           </div>
         )}
       </Header>

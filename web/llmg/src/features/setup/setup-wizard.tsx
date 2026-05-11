@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { DEFAULT_ADMIN_PASSWORD, DEFAULT_ADMIN_USERNAME } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import {
@@ -47,9 +48,9 @@ const STEPS = [
 ]
 
 const DEFAULT_FORM_VALUES: SetupFormValues = {
-  username: '',
-  password: '',
-  confirmPassword: '',
+  username: DEFAULT_ADMIN_USERNAME,
+  password: DEFAULT_ADMIN_PASSWORD,
+  confirmPassword: DEFAULT_ADMIN_PASSWORD,
   usageMode: 'external',
 }
 

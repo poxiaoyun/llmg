@@ -1,5 +1,70 @@
 {
   "translation": {
+    "docs": {
+      "sections": {
+        "gettingStarted": "开始使用",
+        "cliAgents": "CLI 智能体",
+        "editorIntegration": "编辑器集成",
+        "reference": "参考"
+      },
+      "groups": {
+        "cliAgents": "CLI 智能体"
+      },
+      "shell": {
+        "searchPlaceholder": "搜索文档...",
+        "copyPage": "复制页面链接",
+        "pickAPathTitle": "选择一个起点",
+        "pickAPathDescription": "先挑与你当前客户端或工作流最接近的指南，再按那一篇完成接入。",
+        "openGuide": "打开指南",
+        "previous": "上一篇",
+        "next": "下一篇",
+        "noMatches": "没有匹配的文档。",
+        "onThisPage": "本页目录",
+        "scrollToTop": "回到顶部"
+      },
+      "pages": {
+        "overview": {
+          "title": "总览",
+          "summary": "先理解如何连接 LLMG 网关，再决定从哪个客户端入口开始接入。",
+          "description": "LLMG 提供统一网关入口，让你可以用同一套 API key 和 base URL 连接多种模型供应商与兼容客户端。"
+        },
+        "quickstart": {
+          "title": "快速开始",
+          "summary": "创建密钥、复制 base URL，然后发出第一条请求验证连接。",
+          "description": "第一次接入 LLMG 建议先看这里，包含 API key、endpoint、连通性检查和模型发现。"
+        },
+        "cli-overview": {
+          "title": "总览",
+          "summary": "如果你的 AI 工具运行在终端里，先从这里判断该看哪一篇 CLI 指南。",
+          "description": "这一组面向命令行智能体，重点是环境变量、配置文件和最短验证命令。"
+        },
+        "codex-cli": {
+          "title": "Codex CLI",
+          "summary": "把 ~/.codex/config.toml 指向 LLMG，并将默认 provider 切到你的网关。",
+          "description": "适用于 Codex CLI 以及其他复用同一套 Codex 配置格式的工具。"
+        },
+        "claude-code-cli": {
+          "title": "Claude Code CLI",
+          "summary": "使用 Anthropic 兼容变量，把 Claude Code 路由到 LLMG 的 Messages 入口。",
+          "description": "适合本地运行 Claude Code 的用户，关键是正确设置 ANTHROPIC_BASE_URL 与 ANTHROPIC_AUTH_TOKEN。"
+        },
+        "opencode-cli": {
+          "title": "OpenCode CLI",
+          "summary": "在 opencode.jsonc 中加入 LLMG provider，并选择网关里实际存在的模型。",
+          "description": "适用于 OpenCode 终端客户端，重点是 provider、baseURL 和 apiKey 的配置方式。"
+        },
+        "vscode-extension": {
+          "title": "VS Code 扩展",
+          "summary": "在 VS Code 里复用 Codex 风格配置，让编辑器请求统一走 LLMG。",
+          "description": "适合在 VS Code 中使用 OpenAI 或 Codex 扩展的用户，关键是环境变量和 ~/.codex/config.toml。"
+        },
+        "api-reference": {
+          "title": "API 参考",
+          "summary": "查看鉴权方式、路径、请求字段、响应结构和模型发现方法。",
+          "description": "当你已经拿到 key 和 endpoint，需要对照协议完成正式集成时，请看这里。"
+        }
+      }
+    },
     "360": "360",
     "1000": "1000",
     "10000": "10000",
@@ -945,6 +1010,7 @@
     "Copy Key": "复制密钥",
     "Copy Link": "复制链接",
     "Copy model name": "复制模型名称",
+    "Cache price": "缓存价格",
     "Copy model names": "复制模型名称列表",
     "Copy prompt": "复制提示词",
     "Copy ready-to-run curl": "复制可直接运行的 curl",
@@ -2382,6 +2448,7 @@
     "MokaAI": "MokaAI",
     "Monitor": "监控",
     "Monitor balance, usage, and request volume": "监控余额、用量和请求量",
+    "Monitor usage and request volume": "监控用量和请求量",
     "Monitored relay requests": "已监控的中继请求",
     "Monitoring & Alerts": "监控与警报",
     "Month": "本月",
@@ -3182,6 +3249,7 @@
     "Referral link:": "推荐链接：",
     "Referral Program": "推荐计划",
     "Refine models by provider, group, type, and tags.": "按供应商、分组、类型和标签细化模型。",
+    "Refine models by provider and endpoint type.": "按供应商和端点类型筛选模型。",
     "Refresh": "刷新",
     "Refresh Cache": "刷新缓存",
     "Refresh credential": "刷新凭据",
@@ -4435,6 +4503,23 @@
     "Zero retention": "零数据保留",
     "Zhipu": "智谱",
     "Zhipu V4": "智谱 V4",
-    "Zoom": "缩放"
+    "Zoom": "缩放",
+    "Browse docs": "查看文档",
+    "Choose the entry point that matches how you run LLMG today.": "根据你当前使用 LLMG 的方式，选择最合适的阅读入口。",
+    "Clear search": "清空搜索",
+    "Copy page link": "复制页面链接",
+    "Documentation": "文档",
+    "Featured paths": "推荐入口",
+    "Last updated on {{date}}": "最后更新于 {{date}}",
+    "Next": "下一篇",
+    "No matching documents": "没有匹配的文档",
+    "On this page": "本页目录",
+    "Open console": "打开控制台",
+    "Previous": "上一篇",
+    "Search docs": "搜索文档",
+    "Search guides, APIs, and console workflows": "搜索指南、接口说明和控制台工作流",
+    "Search quickstart, client setup, and API reference": "搜索快速开始、客户端配置和接口说明",
+    "Try a broader keyword or jump back to overview.": "试试更宽泛的关键词，或者直接回到总览页。",
+    "Choose the guide that matches the client or workflow you want to connect first.": "根据你要接入的客户端或工作流，选择最合适的指南。"
   }
 }

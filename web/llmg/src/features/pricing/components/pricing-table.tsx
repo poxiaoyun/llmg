@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import {
   flexRender,
   getCoreRowModel,
@@ -28,7 +28,6 @@ export interface PricingTableProps {
   usdExchangeRate?: number
   tokenUnit?: TokenUnit
   showRechargePrice?: boolean
-  onModelClick?: (modelName: string) => void
 }
 
 export function PricingTable(props: PricingTableProps) {
@@ -40,7 +39,6 @@ export function PricingTable(props: PricingTableProps) {
     usdExchangeRate = 1,
     tokenUnit = DEFAULT_TOKEN_UNIT,
     showRechargePrice = false,
-    onModelClick,
   } = props
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -65,13 +63,6 @@ export function PricingTable(props: PricingTableProps) {
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: false,
   })
-
-  const handleRowClick = useCallback(
-    (model: PricingModel) => {
-      onModelClick?.(model.model_name)
-    },
-    [onModelClick]
-  )
 
   return (
     <div className='space-y-4'>
@@ -108,11 +99,7 @@ export function PricingTable(props: PricingTableProps) {
               />
             ) : (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  onClick={() => handleRowClick(row.original)}
-                  className='hover:bg-muted/30 cursor-pointer transition-colors'
-                >
+                <TableRow key={row.id} className='hover:bg-muted/30 transition-colors'>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
