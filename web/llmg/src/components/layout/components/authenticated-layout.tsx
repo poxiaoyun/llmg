@@ -8,6 +8,7 @@ import { SkipToMain } from '@/components/skip-to-main'
 import { WorkspaceProvider } from '../context/workspace-context'
 import { AppHeader } from './app-header'
 import { AppSidebar } from './app-sidebar'
+import { Footer } from './footer'
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
@@ -33,6 +34,7 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
                 )}
               >
                 {props.children ?? <AnimatedOutlet />}
+                <Footer variant='compact' className='mt-auto' />
               </SidebarInset>
             </div>
           </SidebarProvider>

@@ -164,7 +164,7 @@ function Sidebar({
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
-  if (collapsible === 'none') {
+  if (collapsible === 'none' && isMobile) {
     return (
       <div
         data-slot='sidebar'

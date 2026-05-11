@@ -20,6 +20,7 @@ interface FooterProps {
   columns?: FooterColumnProps[]
   copyright?: string
   className?: string
+  variant?: 'full' | 'compact'
 }
 
 function FooterLinkItem(props: { link: FooterLink }) {
@@ -53,6 +54,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
 export function Footer(props: FooterProps) {
   const { t } = useTranslation()
   const { footerHtml, demoSiteEnabled } = useSystemConfig()
+  const variant = props.variant ?? 'full'
 
   const isDemoSiteMode = Boolean(demoSiteEnabled)
 
@@ -123,12 +125,29 @@ export function Footer(props: FooterProps) {
           props.className
         )}
       >
-        <div className='mx-auto w-full max-w-6xl px-6 py-5'>
-          <div className='bg-muted/20 border-border/50 rounded-2xl border px-4 py-4 backdrop-blur-sm sm:px-5'>
-            <div
-              className='custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left'
-              dangerouslySetInnerHTML={{ __html: footerHtml }}
-            />
+        <div className={cn('mx-auto w-full max-w-6xl px-6', variant === 'compact' ? 'py-4' : 'py-5')}>
+          <div
+            className={cn(
+              'custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left',
+              variant === 'compact'
+                ? 'text-muted-foreground/75 text-xs'
+                : 'bg-muted/20 border-border/50 rounded-2xl border px-4 py-4 backdrop-blur-sm sm:px-5'
+            )}
+            dangerouslySetInnerHTML={{ __html: footerHtml }}
+          />
+        </div>
+      </footer>
+    )
+  }
+
+  if (variant === 'compact') {
+    return (
+      <footer className={cn('border-border/40 relative z-10 border-t', props.className)}>
+        <div className='mx-auto max-w-6xl px-6 py-4'>
+          <div className='text-center'>
+            <p className='text-muted-foreground/55 text-xs tracking-[0.18em] uppercase'>
+              &copy; 2026 XIAOSHI AI, INC.
+            </p>
           </div>
         </div>
       </footer>

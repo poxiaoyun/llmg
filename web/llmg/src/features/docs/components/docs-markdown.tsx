@@ -1,15 +1,39 @@
-import { createElement, isValidElement } from 'react'
+import { createElement, isValidElement, useEffect, useMemo, useState } from 'react'
 import type { ReactNode, ReactElement } from 'react'
 import { Link2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm'
+import type { BundledLanguage } from 'shiki/bundle/web'
 import { cn } from '@/lib/utils'
+import { highlightCode } from '@/components/ai-elements/code-block'
 import { slugifyHeading } from '../lib'
 
 type DocsMarkdownProps = {
   children: string
   className?: string
+}
+
+const DOCS_HIGHLIGHT_ALIASES: Record<string, string> = {
+  bash: 'bash',
+  shell: 'bash',
+  sh: 'bash',
+  zsh: 'bash',
+  python: 'python',
+  py: 'python',
+  typescript: 'typescript',
+  ts: 'typescript',
+  javascript: 'javascript',
+  js: 'javascript',
+  json: 'json',
+  jsonc: 'json',
+  yaml: 'yaml',
+  yml: 'yaml',
+  toml: 'toml',
+  markdown: 'markdown',
+  md: 'markdown',
+  powershell: 'powershell',
+  ps1: 'powershell',
 }
 
 function flattenText(node: ReactNode): string {
@@ -81,6 +105,107 @@ function getCodeBlockLanguage(node: ReactNode): string {
   return 'TEXT'
 }
 
+function getCodeBlockInfo(node: ReactNode): { code: string; language?: string } {
+  if (Array.isArray(node) && node.length > 0) {
+    for (const child of node) {
+      const next = getCodeBlockInfo(child)
+      if (next.code) {
+        return next
+      }
+    }
+  }
+
+  if (isValidElement(node)) {
+    const element = node as ReactElement<{
+      className?: string
+      children?: ReactNode
+    }>
+    const matched = element.props.className?.match(/language-([\w-]+)/)
+
+    return {
+      code: flattenText(element.props.children).replace(/\n$/, ''),
+      language: matched?.[1],
+    }
+  }
+
+  return {
+    code: flattenText(node).replace(/\n$/, ''),
+  }
+}
+
+function resolveDocsHighlightLanguage(language?: string): BundledLanguage | null {
+  if (!language) {
+    return null
+  }
+
+  const normalized = language.toLowerCase()
+
+  if (normalized === 'text' || normalized === 'txt' || normalized === 'plaintext') {
+    return null
+  }
+
+  return (DOCS_HIGHLIGHT_ALIASES[normalized] ?? normalized) as BundledLanguage
+}
+
+function DocsCodeBlock({ children }: { children?: ReactNode }) {
+  const { code, language } = useMemo(() => getCodeBlockInfo(children), [children])
+  const resolvedLanguage = useMemo(
+    () => resolveDocsHighlightLanguage(language),
+    [language]
+  )
+  const [highlightedHtml, setHighlightedHtml] = useState<string>('')
+
+  useEffect(() => {
+    let cancelled = false
+
+    if (!resolvedLanguage || !code) {
+      setHighlightedHtml('')
+      return () => {
+        cancelled = true
+      }
+    }
+
+    setHighlightedHtml('')
+
+    highlightCode(code, resolvedLanguage)
+      .then((html) => {
+        if (!cancelled) {
+          setHighlightedHtml(html)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setHighlightedHtml('')
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [code, resolvedLanguage])
+
+  return (
+    <div className='not-prose my-5 overflow-hidden rounded-lg border bg-background/70 shadow-none'>
+      <div className='bg-muted/50 border-b px-4 py-2'>
+        <span className='text-muted-foreground font-mono text-[11px] font-medium uppercase'>
+          {getCodeBlockLanguage(children)}
+        </span>
+      </div>
+
+      {highlightedHtml ? (
+        <div
+          className='overflow-hidden [&>pre]:!m-0 [&>pre]:!bg-transparent [&>pre]:!p-4 [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm [&_code]:leading-relaxed'
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+        />
+      ) : (
+        <pre className='m-0 overflow-x-auto bg-transparent px-4 py-3 text-sm leading-relaxed text-foreground'>
+          <code>{code}</code>
+        </pre>
+      )}
+    </div>
+  )
+}
+
 export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
   return (
     <div
@@ -121,22 +246,7 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
               />
             )
           },
-          pre: ({ children }) => {
-            const language = getCodeBlockLanguage(children)
-
-            return (
-              <div className='not-prose my-5 overflow-hidden rounded-lg border bg-background/70 shadow-none'>
-                <div className='bg-muted/50 border-b px-4 py-2'>
-                  <span className='text-muted-foreground font-mono text-[11px] font-medium uppercase'>
-                    {language}
-                  </span>
-                </div>
-                <pre className='m-0 overflow-x-auto bg-transparent px-4 py-3 text-sm leading-relaxed text-foreground'>
-                  {children}
-                </pre>
-              </div>
-            )
-          },
+          pre: ({ children: codeChildren }) => <DocsCodeBlock>{codeChildren}</DocsCodeBlock>,
           code: ({ className: codeClassName, children: codeChildren, ...props }) => {
             const isBlockCode = Boolean(codeClassName && /language-/.test(codeClassName))
 
