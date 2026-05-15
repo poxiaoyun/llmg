@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowRight, Search } from 'lucide-react'
+import { ArrowRight, Flame, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { Button } from '@/components/ui/button'
@@ -15,22 +15,22 @@ export function Hero(props: HeroProps) {
   useSystemConfig()
   const modelRows = [
     {
-      model: 'openai/gpt-5.4',
+      popularity: 3,
+      model: 'gpt-5.5',
       provider: 'OpenAI',
-      context: 'v5.4',
-      price: t('Latest'),
+      context: '1M',
     },
     {
-      model: 'anthropic/claude-sonnet-4-6',
+      popularity: 2,
+      model: 'claude-opus-4-7',
       provider: 'Anthropic',
-      context: 'v4.6',
-      price: t('Latest'),
+      context: '1M',
     },
     {
-      model: 'google/gemini-2.5-pro',
+      popularity: 1,
+      model: 'gemini-3.1-pro-preview',
       provider: 'Google',
-      context: 'v2.5',
-      price: t('Stable'),
+      context: '1M',
     },
   ]
 
@@ -103,13 +103,26 @@ export function Hero(props: HeroProps) {
                 </span>
                 <span className='or-kbd ms-auto'>/</span>
               </div>
+              <div className='text-muted-foreground grid grid-cols-[84px_minmax(0,1fr)_88px] gap-3 border-b px-4 py-2 text-[11px] font-medium tracking-[0.16em] uppercase'>
+                <span>{t('Popularity')}</span>
+                <span>{t('Model')}</span>
+                <span className='justify-self-end'>{t('Context')}</span>
+              </div>
               <div className='divide-y'>
                 {modelRows.map((row) => (
                   <Link
                     key={row.model}
                     to='/pricing'
-                    className='hover:bg-muted/35 text-foreground grid grid-cols-[minmax(0,1fr)_72px_72px] items-center gap-3 px-4 py-3 transition-colors'
+                    className='hover:bg-muted/35 text-foreground grid grid-cols-[84px_minmax(0,1fr)_88px] items-center gap-3 px-4 py-3 transition-colors'
                   >
+                    <div className='flex items-center gap-1.5'>
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <Flame
+                          key={`${row.model}-heat-${index}`}
+                          className={`size-3.5 ${index < row.popularity ? 'text-foreground' : 'text-muted-foreground opacity-40'}`}
+                        />
+                      ))}
+                    </div>
                     <div className='min-w-0'>
                       <div className='truncate font-mono text-sm font-medium'>
                         {row.model}
@@ -118,11 +131,8 @@ export function Hero(props: HeroProps) {
                         {row.provider}
                       </div>
                     </div>
-                    <div className='text-muted-foreground font-mono text-xs'>
+                    <div className='text-muted-foreground justify-self-end font-mono text-xs'>
                       {row.context}
-                    </div>
-                    <div className='justify-self-end font-mono text-xs'>
-                      {row.price}
                     </div>
                   </Link>
                 ))}

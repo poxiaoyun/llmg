@@ -47,82 +47,86 @@ const ACCENT_CLASSES: Record<
   },
 }
 
-const API_DEMOS: ApiDemoConfig[] = [
-  {
-    id: 'curl-stream',
-    label: 'cURL',
-    badge: 'SSE',
-    endpoint: '/v1/chat/completions',
-    request: [
-      'curl "https://api.your-domain.com/v1/chat/completions" \\',
-      '  -N \\',
-      '  -H "Authorization: Bearer $LLMG_API_KEY" \\',
-      '  -H "Content-Type: application/json" \\',
-      "  -d '{",
-      '    "model": "gpt-4o-mini",',
-      '    "stream": true,',
-      '    "messages": [',
-      '      { "role": "user", "content": "Plan a release checklist" }',
-      '    ]',
-      "  }'",
-    ],
-    tokens: 64,
-    latency: 118,
-    accent: 'emerald',
-  },
-  {
-    id: 'openai-sdk-stream',
-    label: 'OpenAI SDK',
-    badge: 'node',
-    endpoint: 'OpenAI-compatible /v1',
-    request: [
-      'import OpenAI from "openai"',
-      '',
-      'const client = new OpenAI({',
-      '  apiKey: process.env.LLMG_API_KEY,',
-      '  baseURL: "https://api.your-domain.com/v1",',
-      '})',
-      '',
-      'const stream = await client.chat.completions.create({',
-      '  model: "gpt-4o-mini",',
-      '  stream: true,',
-      '  messages: [{ role: "user", content: "Ship status?" }],',
-      '})',
-      '',
-      'for await (const chunk of stream)',
-      '  process.stdout.write(chunk.choices[0]?.delta?.content ?? "")',
-    ],
-    tokens: 72,
-    latency: 134,
-    accent: 'amber',
-  },
-  {
-    id: 'anthropic-sdk-stream',
-    label: 'Anthropic SDK',
-    badge: 'node',
-    endpoint: 'Anthropic-compatible /v1/messages',
-    request: [
-      'import Anthropic from "@anthropic-ai/sdk"',
-      '',
-      'const client = new Anthropic({',
-      '  apiKey: process.env.LLMG_API_KEY,',
-      '  baseURL: "https://api.your-domain.com",',
-      '})',
-      '',
-      'const stream = client.messages.stream({',
-      '  model: "claude-3-5-sonnet-latest",',
-      '  max_tokens: 512,',
-      '  messages: [{ role: "user", content: "Summarize routing health" }],',
-      '})',
-      '',
-      'for await (const event of stream)',
-      '  if (event.type === "content_block_delta") process.stdout.write(event.delta.text ?? "")',
-    ],
-    tokens: 81,
-    latency: 149,
-    accent: 'blue',
-  },
-]
+const FALLBACK_BROWSER_ORIGIN = 'https://api.your-domain.com'
+
+function buildApiDemos(origin: string): ApiDemoConfig[] {
+  return [
+    {
+      id: 'curl-stream',
+      label: 'cURL',
+      badge: 'SSE',
+      endpoint: '/v1/chat/completions',
+      request: [
+        `curl "${origin}/v1/chat/completions" \\`,
+        '  -N \\',
+        '  -H "Authorization: Bearer $LLMG_API_KEY" \\',
+        '  -H "Content-Type: application/json" \\',
+        "  -d '{",
+        '    "model": "gpt-5.5",',
+        '    "stream": true,',
+        '    "messages": [',
+        '      { "role": "user", "content": "Plan a release checklist" }',
+        '    ]',
+        "  }'",
+      ],
+      tokens: 64,
+      latency: 118,
+      accent: 'emerald',
+    },
+    {
+      id: 'openai-sdk-stream',
+      label: 'OpenAI SDK',
+      badge: 'node',
+      endpoint: 'OpenAI-compatible /v1',
+      request: [
+        'import OpenAI from "openai"',
+        '',
+        'const client = new OpenAI({',
+        '  apiKey: process.env.LLMG_API_KEY,',
+        `  baseURL: "${origin}/v1",`,
+        '})',
+        '',
+        'const stream = await client.chat.completions.create({',
+        '  model: "gpt-5.5",',
+        '  stream: true,',
+        '  messages: [{ role: "user", content: "Ship status?" }],',
+        '})',
+        '',
+        'for await (const chunk of stream)',
+        '  process.stdout.write(chunk.choices[0]?.delta?.content ?? "")',
+      ],
+      tokens: 72,
+      latency: 134,
+      accent: 'amber',
+    },
+    {
+      id: 'anthropic-sdk-stream',
+      label: 'Anthropic SDK',
+      badge: 'node',
+      endpoint: 'Anthropic-compatible /v1/messages',
+      request: [
+        'import Anthropic from "@anthropic-ai/sdk"',
+        '',
+        'const client = new Anthropic({',
+        '  apiKey: process.env.LLMG_API_KEY,',
+        `  baseURL: "${origin}",`,
+        '})',
+        '',
+        'const stream = client.messages.stream({',
+        '  model: "claude-opus-4-7",',
+        '  max_tokens: 512,',
+        '  messages: [{ role: "user", content: "Summarize routing health" }],',
+        '})',
+        '',
+        'for await (const event of stream)',
+        '  if (event.type === "content_block_delta") process.stdout.write(event.delta.text ?? "")',
+      ],
+      tokens: 81,
+      latency: 149,
+      accent: 'blue',
+    },
+  ]
+}
 
 const STREAM_START_DELAY_MS = 180
 const STREAM_CHAR_DELAY_MS = 12
@@ -130,20 +134,27 @@ const STREAM_LINE_DELAY_MS = 90
 
 export function HeroTerminalDemo() {
   const [activeIndex, setActiveIndex] = useState(0)
+  const [browserOrigin] = useState(() =>
+    typeof window === 'undefined'
+      ? FALLBACK_BROWSER_ORIGIN
+      : window.location.origin
+  )
   const [visibleLines, setVisibleLines] = useState<string[]>([])
   const [streamDone, setStreamDone] = useState(false)
   const streamTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const rotateTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  const demo = API_DEMOS[activeIndex]
+  const apiDemos = buildApiDemos(browserOrigin)
+  const demo = apiDemos[activeIndex]
   const accent = ACCENT_CLASSES[demo.accent]
 
   useEffect(() => {
+    const currentDemo = buildApiDemos(browserOrigin)[activeIndex]
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (streamTimerRef.current) clearTimeout(streamTimerRef.current)
 
     if (mq.matches) {
-      setVisibleLines(demo.request)
+      setVisibleLines(currentDemo.request)
       setStreamDone(true)
       return
     }
@@ -156,7 +167,7 @@ export function HeroTerminalDemo() {
 
     const tick = () => {
       if (cancelled) return
-      const line = demo.request[lineIndex]
+      const line = currentDemo.request[lineIndex]
 
       if (line === undefined) {
         setStreamDone(true)
@@ -173,7 +184,7 @@ export function HeroTerminalDemo() {
       if (charIndex > line.length) {
         lineIndex += 1
         charIndex = 0
-        if (lineIndex < demo.request.length) {
+        if (lineIndex < currentDemo.request.length) {
           setVisibleLines((prev) => [...prev, ''])
         }
         streamTimerRef.current = setTimeout(tick, STREAM_LINE_DELAY_MS)
@@ -189,7 +200,7 @@ export function HeroTerminalDemo() {
       cancelled = true
       if (streamTimerRef.current) clearTimeout(streamTimerRef.current)
     }
-  }, [demo])
+  }, [activeIndex, browserOrigin])
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -198,13 +209,13 @@ export function HeroTerminalDemo() {
     if (!streamDone || mq.matches) return
 
     rotateTimerRef.current = setTimeout(() => {
-      setActiveIndex((prev) => (prev + 1) % API_DEMOS.length)
+      setActiveIndex((prev) => (prev + 1) % apiDemos.length)
     }, 1800)
 
     return () => {
       if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current)
     }
-  }, [streamDone])
+  }, [streamDone, apiDemos.length])
 
   const handleSelect = (index: number) => {
     if (index === activeIndex) return
@@ -228,7 +239,7 @@ export function HeroTerminalDemo() {
             'border-border/50 dark:border-white/[0.05]'
           )}
         >
-          {API_DEMOS.map((item, index) => {
+          {apiDemos.map((item, index) => {
             const tone = ACCENT_CLASSES[item.accent]
             const isActive = index === activeIndex
             return (
