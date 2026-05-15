@@ -222,6 +222,15 @@ func UpdateOption(key string, value string) error {
 	return updateOptionMap(key, value)
 }
 
+func shouldInvalidatePricingCache(key string) bool {
+	switch key {
+	case "ModelRatio", "ModelPrice", "CompletionRatio", "CacheRatio", "CreateCacheRatio", "ImageRatio", "AudioRatio", "AudioCompletionRatio":
+		return true
+	default:
+		return false
+	}
+}
+
 func updateOptionMap(key string, value string) (err error) {
 	common.OptionMapRWMutex.Lock()
 	defer common.OptionMapRWMutex.Unlock()
@@ -547,6 +556,9 @@ func updateOptionMap(key string, value string) (err error) {
 		// WaffoPayMethods is read directly from OptionMap via setting.GetWaffoPayMethods().
 		// The value is already stored in OptionMap at the top of this function (line: common.OptionMap[key] = value).
 		// No additional in-memory variable to update.
+	}
+	if err == nil && shouldInvalidatePricingCache(key) {
+		InvalidatePricingCache()
 	}
 	return err
 }

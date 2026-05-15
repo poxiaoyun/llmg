@@ -210,6 +210,29 @@ func TestListModelsIncludesTieredBillingModel(t *testing.T) {
 	require.Empty(t, missingExprPricing.BillingExpr)
 }
 
+func TestPricingIncludesConfiguredContextLength(t *testing.T) {
+	db := setupModelListControllerTestDB(t)
+	model.InvalidatePricingCache()
+	t.Cleanup(model.InvalidatePricingCache)
+
+	require.NoError(t, db.Create(&model.Model{
+		ModelName:     "zz-context-model",
+		ContextLength: 262144,
+		Status:        1,
+	}).Error)
+	require.NoError(t, db.Create(&model.Ability{
+		Group:     "default",
+		Model:     "zz-context-model",
+		ChannelId: 1,
+		Enabled:   true,
+	}).Error)
+
+	pricingByName := pricingByModelName(model.GetPricing())
+	pricing, ok := pricingByName["zz-context-model"]
+	require.True(t, ok)
+	require.Equal(t, 262144, pricing.ContextLength)
+}
+
 func TestListModelsTokenLimitIncludesTieredBillingModel(t *testing.T) {
 	withSelfUseModeDisabled(t)
 	withTieredBillingConfig(t, map[string]string{

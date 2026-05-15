@@ -485,6 +485,7 @@
     "Bark Push URL": "URL для push-уведомлений Bark",
     "Base address provided by your Epay service": "Базовый адрес, предоставленный вашим сервисом Epay",
     "Base amount. Actual deduction = base amount × system group rate.": "Базовая сумма. Фактический вычет = базовая сумма × коэффициент группы.",
+    "List prices use each model's lowest available group ratio. See the model details page for base price and per-group pricing.": "Цены в списке рассчитываются по минимальному доступному групповому коэффициенту для каждой модели. Базовую цену и цены по группам смотрите на странице деталей модели.",
     "Base input and output token prices for this tier.": "Base input and output token prices for this tier.",
     "Base input price only": "Только базовая цена входа",
     "Base Limits": "Базовые лимиты",

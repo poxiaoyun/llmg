@@ -68,6 +68,7 @@ const extendedModelFormSchema = z.object({
   tags: z.array(z.string()),
   vendor_id: z.number().optional(),
   endpoints: z.string(),
+  context_length: z.string().optional(),
   name_rule: z.number(),
   status: z.boolean(),
   sync_official: z.boolean(),
@@ -189,6 +190,7 @@ export function ModelMutateDrawer({
       tags: [],
       vendor_id: undefined,
       endpoints: '',
+      context_length: '',
       name_rule: 0,
       status: true,
       sync_official: true,
@@ -205,6 +207,11 @@ export function ModelMutateDrawer({
   const validateNumber = (value: string) => {
     if (value === '') return true
     return !isNaN(parseFloat(value))
+  }
+
+  const validateInteger = (value: string) => {
+    if (value === '') return true
+    return /^\d+$/.test(value)
   }
 
   const handlePromptPriceChange = (value: string) => {
@@ -248,6 +255,7 @@ export function ModelMutateDrawer({
         tags: parseModelTags(model.tags),
         vendor_id: model.vendor_id,
         endpoints: model.endpoints || '',
+        context_length: model.context_length?.toString() || '',
         name_rule: model.name_rule || 0,
         status: model.status === 1,
         sync_official: model.sync_official === 1,
@@ -352,6 +360,7 @@ export function ModelMutateDrawer({
         tags: [],
         vendor_id: undefined,
         endpoints: '',
+        context_length: '',
         name_rule: 0,
         status: true,
         sync_official: true,
@@ -374,6 +383,10 @@ export function ModelMutateDrawer({
           ...values,
           id: isEditing ? currentRow!.id : undefined,
           tags: Array.isArray(values.tags) ? values.tags.join(',') : '',
+          context_length:
+            values.context_length && values.context_length.trim() !== ''
+              ? parseInt(values.context_length, 10)
+              : 0,
           status: values.status ? 1 : 0,
           sync_official: values.sync_official ? 1 : 0,
         }
@@ -751,6 +764,36 @@ export function ModelMutateDrawer({
                     </FormControl>
                     <FormDescription>
                       {t('Press Enter or comma to add tags')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='context_length'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Context')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        inputMode='numeric'
+                        placeholder='128000'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          if (validateInteger(value)) {
+                            field.onChange(value)
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Controls the context length shown on the pricing page. Leave empty to keep the inferred value.'
+                      )}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

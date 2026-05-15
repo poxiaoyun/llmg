@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { PublicLayout } from '@/components/layout'
 import { PageTransition } from '@/components/page-transition'
 import {
@@ -12,6 +13,7 @@ import { useFilters } from './hooks/use-filters'
 import { usePricingData } from './hooks/use-pricing-data'
 
 export function Pricing() {
+  const { t } = useTranslation()
   const {
     models,
     vendors,
@@ -104,7 +106,14 @@ export function Pricing() {
               className='hover-scrollbar sticky top-4 max-h-[calc(100dvh-2rem)] self-start overflow-y-auto'
             />
 
-            <main className='min-w-0'>{renderPricingContent()}</main>
+            <main className='min-w-0 space-y-3'>
+              <div className='text-muted-foreground/80 rounded-lg border border-dashed px-3 py-2 text-xs leading-relaxed'>
+                {t(
+                  "List prices use each model's lowest available group ratio. See the model details page for base price and per-group pricing."
+                )}
+              </div>
+              {renderPricingContent()}
+            </main>
           </div>
         </PageTransition>
       </div>

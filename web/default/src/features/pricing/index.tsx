@@ -237,6 +237,12 @@ export function Pricing() {
                 onClearFilters={clearFilters}
               />
 
+              <div className='text-muted-foreground/80 rounded-lg border border-dashed px-3 py-2 text-xs leading-relaxed'>
+                {t(
+                  "List prices use each model's lowest available group ratio. See the model details page for base price and per-group pricing."
+                )}
+              </div>
+
               {renderPricingContent()}
             </main>
           </div>

@@ -5,9 +5,10 @@ import { hashStringToSeed, seededRandom } from './seed'
 // Model metadata inference
 // ----------------------------------------------------------------------------
 //
-// The backend does not currently return `context_length`, `max_output_tokens`,
-// `knowledge_cutoff`, `release_date`, `parameter_count`, or modality/capability
-// flags for a model. Until it does, we infer reasonable values client-side
+// The backend may return `context_length`, but it does not currently return
+// `max_output_tokens`, `knowledge_cutoff`, `release_date`, `parameter_count`,
+// or modality/capability flags for a model. Until it does, we infer reasonable
+// values client-side
 // from the data we already have (endpoint types, ratios, tags, model name)
 // and fall back to a deterministic mock seeded from the model name so that
 // every render of the same model shows the same numbers.

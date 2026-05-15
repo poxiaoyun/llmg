@@ -485,6 +485,7 @@
     "Bark Push URL": "URL de notification Bark",
     "Base address provided by your Epay service": "Adresse de base fournie par votre service Epay",
     "Base amount. Actual deduction = base amount × system group rate.": "Montant de base. Déduction réelle = montant de base × taux du groupe système.",
+    "List prices use each model's lowest available group ratio. See the model details page for base price and per-group pricing.": "Les prix de la liste utilisent le taux de groupe disponible le plus bas pour chaque modèle. Consultez la page de détails du modèle pour voir le prix de base et le prix par groupe.",
     "Base input and output token prices for this tier.": "Prix de base des tokens d’entrée et de sortie pour ce palier.",
     "Base input price only": "Prix d’entrée de base uniquement",
     "Base Limits": "Limites de base",

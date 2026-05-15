@@ -38,10 +38,10 @@ export type PricingModel = {
   /** Pricing version returned by backend, useful for cache busting */
   pricing_version?: string
   /**
-   * Optional model metadata fields. These are not yet returned by the backend
-   * and are populated client-side from {@link inferModelMetadata}.
-   * When the backend ships these fields, the inference layer becomes a
-   * fallback rather than the source of truth.
+   * Optional model metadata fields. `context_length` may be returned by the
+   * backend; the remaining fields are still populated client-side from
+   * {@link inferModelMetadata}. As the backend ships more fields, inference
+   * becomes a fallback rather than the source of truth.
    */
   context_length?: number
   max_output_tokens?: number

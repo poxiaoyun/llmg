@@ -485,6 +485,7 @@
     "Bark Push URL": "URL đẩy Bark",
     "Base address provided by your Epay service": "Địa chỉ cơ sở được cung cấp bởi dịch vụ Epay của bạn",
     "Base amount. Actual deduction = base amount × system group rate.": "Số tiền cơ sở. Số tiền trừ thực tế = số tiền cơ sở × tỷ lệ nhóm hệ thống.",
+    "List prices use each model's lowest available group ratio. See the model details page for base price and per-group pricing.": "Giá trong danh sách dùng hệ số nhóm khả dụng thấp nhất của từng mô hình. Hãy xem trang chi tiết mô hình để biết giá cơ bản và giá theo nhóm.",
     "Base input and output token prices for this tier.": "Base input and output token prices for this tier.",
     "Base input price only": "Chỉ có giá đầu vào cơ bản",
     "Base Limits": "Giới hạn cơ bản",

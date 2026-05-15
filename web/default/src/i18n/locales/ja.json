@@ -485,6 +485,7 @@
     "Bark Push URL": "BarkプッシュURL",
     "Base address provided by your Epay service": "Epayサービスによって提供されるベースアドレス",
     "Base amount. Actual deduction = base amount × system group rate.": "基本金額。実際の控除 = 基本金額 × システムグループ倍率。",
+    "List prices use each model's lowest available group ratio. See the model details page for base price and per-group pricing.": "一覧の価格は、各モデルで利用可能な最小のグループ倍率で表示されます。基本価格とグループ別価格はモデル詳細ページで確認できます。",
     "Base input and output token prices for this tier.": "この階層の基本入力・出力トークン価格。",
     "Base input price only": "基本入力価格のみ",
     "Base Limits": "基本枠",
