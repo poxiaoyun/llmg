@@ -251,8 +251,10 @@ export function ApiKeysMutateDrawer({
           form.reset()
         }
       }}
+      preventAutoDismiss
     >
       <SheetContent
+        showCloseButton={false}
         side={side}
         className='bg-background flex !h-dvh !w-screen max-w-none gap-0 overflow-hidden p-0 sm:!w-full sm:!max-w-[620px]'
       >

@@ -4,7 +4,7 @@ import { User, Wallet, LogOut, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
-import { ROLE } from '@/lib/roles'
+import { canAccessSystemSettings } from '@/lib/roles'
 import useDialogState from '@/hooks/use-dialog'
 import { useUserDisplay } from '@/hooks/use-user-display'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -26,7 +26,7 @@ export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
   const user = useAuthStore((state) => state.auth.user)
   const { displayName, roleLabel } = useUserDisplay(user)
-  const isSuperAdmin = user?.role === ROLE.SUPER_ADMIN
+  const canOpenSystemSettings = canAccessSystemSettings(user?.role)
   const avatarName = user?.username || displayName
   const avatarFallback = getUserAvatarFallback(avatarName)
   const avatarFallbackStyle = useMemo(
@@ -91,7 +91,7 @@ export function ProfileDropdown() {
             {t('Wallet')}
           </DropdownMenuItem>
 
-          {isSuperAdmin && (
+          {canOpenSystemSettings && (
             <DropdownMenuItem
               onClick={() =>
                 navigate({

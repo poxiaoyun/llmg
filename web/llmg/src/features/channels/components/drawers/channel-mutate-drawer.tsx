@@ -1082,8 +1082,11 @@ export function ChannelMutateDrawer({
 
   return (
     <>
-      <Sheet open={open} onOpenChange={handleOpenChange}>
-        <SheetContent className='flex h-dvh w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl'>
+      <Sheet open={open} onOpenChange={handleOpenChange} preventAutoDismiss>
+        <SheetContent
+          showCloseButton={false}
+          className='flex h-dvh w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl'
+        >
           <SheetHeader className='border-b px-4 py-3 text-start sm:px-6 sm:py-4'>
             <SheetTitle className='flex items-center gap-3'>
               <span className='bg-muted flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border'>

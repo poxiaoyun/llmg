@@ -372,8 +372,12 @@ export function ModelPricingSheet({
   const description = editData?.name || t('New model')
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side='right' className='w-full gap-0 p-0 sm:max-w-2xl'>
+    <Sheet open={open} onOpenChange={onOpenChange} preventAutoDismiss>
+      <SheetContent
+        side='right'
+        showCloseButton={false}
+        className='w-full gap-0 p-0 sm:max-w-2xl'
+      >
         <SheetHeader className='sr-only'>
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>

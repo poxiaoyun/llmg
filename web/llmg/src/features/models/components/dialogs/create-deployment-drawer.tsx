@@ -356,8 +356,12 @@ export function CreateDeploymentDrawer({
           form.reset()
         }
       }}
+      preventAutoDismiss
     >
-      <SheetContent className='flex w-full flex-col sm:max-w-[600px]'>
+      <SheetContent
+        showCloseButton={false}
+        className='flex w-full flex-col sm:max-w-[600px]'
+      >
         <SheetHeader className='text-start'>
           <SheetTitle>{t('Create deployment')}</SheetTitle>
           <SheetDescription>

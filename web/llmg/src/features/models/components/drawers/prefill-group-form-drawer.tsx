@@ -161,8 +161,11 @@ export function PrefillGroupFormDrawer({
     PREFILL_GROUP_TYPE_META[selectedType] || PREFILL_GROUP_TYPE_META.model
 
   return (
-    <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent className='flex h-dvh w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl'>
+    <Sheet open={open} onOpenChange={handleOpenChange} preventAutoDismiss>
+      <SheetContent
+        showCloseButton={false}
+        className='flex h-dvh w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl'
+      >
         <SheetHeader className='border-b px-4 py-3 text-start sm:px-6 sm:py-4'>
           <SheetTitle>
             {isEdit ? t('Edit Prefill Group') : t('Create Prefill Group')}

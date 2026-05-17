@@ -9,7 +9,10 @@ import {
   ChevronRight,
   Copy,
   Search,
+  Settings,
 } from 'lucide-react'
+import { useAuthStore } from '@/stores/auth-store'
+import { canAccessSystemSettings } from '@/lib/roles'
 import { PublicLayout } from '@/components/layout'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { Button } from '@/components/ui/button'
@@ -70,9 +73,11 @@ function DocsSkeleton() {
 export function Docs({ pageId }: DocsProps) {
   const { t, i18n } = useTranslation()
   const { copyToClipboard } = useCopyToClipboard({ notify: true })
+  const userRole = useAuthStore((state) => state.auth.user?.role)
   const [query, setQuery] = useState('')
   const [cliOpenOverride, setCliOpenOverride] = useState<boolean | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const canOpenSystemSettings = canAccessSystemSettings(userRole)
 
   const pages = useMemo(
     () => getDocsPages(t, i18n.resolvedLanguage),
@@ -254,10 +259,27 @@ export function Docs({ pageId }: DocsProps) {
                     </p>
                   </div>
 
-                  <Button variant='outline' size='sm' onClick={handleCopyPageLink}>
-                    <Copy />
-                    {t('docs.shell.copyPage')}
-                  </Button>
+                  <div className='flex flex-wrap items-center gap-2'>
+                    {canOpenSystemSettings && (
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        render={
+                          <Link
+                            to='/system-settings/site/$section'
+                            params={{ section: 'system-info' }}
+                          />
+                        }
+                      >
+                        <Settings />
+                        {t('System Settings')}
+                      </Button>
+                    )}
+                    <Button variant='outline' size='sm' onClick={handleCopyPageLink}>
+                      <Copy />
+                      {t('docs.shell.copyPage')}
+                    </Button>
+                  </div>
                 </div>
               </div>
 

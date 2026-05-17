@@ -124,8 +124,12 @@ export function SubscriptionsMutateDrawer({
           form.reset()
         }
       }}
+      preventAutoDismiss
     >
-      <SheetContent className='flex h-dvh w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[600px]'>
+      <SheetContent
+        showCloseButton={false}
+        className='flex h-dvh w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[600px]'
+      >
         <SheetHeader className='border-b px-4 py-3 text-start sm:px-6 sm:py-4'>
           <SheetTitle>
             {isEdit ? t('Update plan info') : t('Create new subscription plan')}

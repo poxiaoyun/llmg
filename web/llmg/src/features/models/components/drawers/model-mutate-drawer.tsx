@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -86,6 +86,19 @@ type ExtendedModelFormValues = z.infer<typeof extendedModelFormSchema>
 type PricingMode = 'per-token' | 'per-request'
 type PricingSubMode = 'ratio' | 'price'
 
+function movePricingEntry(
+  map: Record<string, number>,
+  sourceModelName: string,
+  targetModelName: string
+) {
+  if (sourceModelName === targetModelName || !(sourceModelName in map)) {
+    return
+  }
+
+  map[targetModelName] = map[sourceModelName]
+  delete map[sourceModelName]
+}
+
 type ModelMutateDrawerProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -107,6 +120,11 @@ export function ModelMutateDrawer({
   const [promptPrice, setPromptPrice] = useState('')
   const [completionPrice, setCompletionPrice] = useState('')
   const [oldModelName, setOldModelName] = useState<string>('')
+  const pricingConfigTouchedRef = useRef(false)
+
+  const markPricingConfigTouched = useCallback(() => {
+    pricingConfigTouchedRef.current = true
+  }, [])
 
   // Fetch vendors for dropdown
   const { data: vendorsData } = useQuery({
@@ -215,6 +233,7 @@ export function ModelMutateDrawer({
   }
 
   const handlePromptPriceChange = (value: string) => {
+    markPricingConfigTouched()
     setPromptPrice(value)
     if (value && !isNaN(parseFloat(value))) {
       const ratio = parseFloat(value) / 2
@@ -225,6 +244,7 @@ export function ModelMutateDrawer({
   }
 
   const handleCompletionPriceChange = (value: string) => {
+    markPricingConfigTouched()
     setCompletionPrice(value)
     if (
       value &&
@@ -243,6 +263,7 @@ export function ModelMutateDrawer({
   // Load model data for editing and ratio configuration
   useEffect(() => {
     if (open && isEditing && modelData?.data) {
+      pricingConfigTouchedRef.current = false
       const model = modelData.data
       setOldModelName(model.model_name)
 
@@ -347,6 +368,7 @@ export function ModelMutateDrawer({
       }
     } else if (open && !isEditing) {
       // Pre-fill model name if passed from missing models
+      pricingConfigTouchedRef.current = false
       setOldModelName('')
       setPricingMode('per-token')
       setPricingSubMode('ratio')
@@ -410,6 +432,13 @@ export function ModelMutateDrawer({
         if (response.success) {
           // Handle ratio configuration updates in system settings
           const finalModelName = values.model_name
+          const pricingConfigTouched = pricingConfigTouchedRef.current
+          const shouldMoveExistingPricingConfig = Boolean(
+            !pricingConfigTouched &&
+              isEditing &&
+              oldModelName &&
+              oldModelName !== finalModelName
+          )
           const hasRatioConfig =
             (pricingMode === 'per-request' &&
               values.price &&
@@ -422,9 +451,9 @@ export function ModelMutateDrawer({
                 values.audioRatio ||
                 values.audioCompletionRatio))
 
-          // Always process system settings updates if we have modelSettings
-          // This ensures we can remove stale entries even when clearing all pricing fields
-          if (modelSettings) {
+          // Only touch system pricing when the user explicitly edited pricing,
+          // or when a renamed model needs its existing pricing entries moved.
+          if (modelSettings && (pricingConfigTouched || shouldMoveExistingPricingConfig)) {
             // Read existing configurations
             const priceMap = safeJsonParse<Record<string, number>>(
               modelSettings.ModelPrice,
@@ -455,62 +484,72 @@ export function ModelMutateDrawer({
               { fallback: {}, silent: true }
             )
 
-            // Remove old model name entries if model name changed (always, even if no new config)
-            if (isEditing && oldModelName && oldModelName !== finalModelName) {
-              delete priceMap[oldModelName]
-              delete ratioMap[oldModelName]
-              delete cacheMap[oldModelName]
-              delete completionMap[oldModelName]
-              delete imageMap[oldModelName]
-              delete audioMap[oldModelName]
-              delete audioCompletionMap[oldModelName]
-            }
+            if (pricingConfigTouched) {
+              if (isEditing && oldModelName && oldModelName !== finalModelName) {
+                delete priceMap[oldModelName]
+                delete ratioMap[oldModelName]
+                delete cacheMap[oldModelName]
+                delete completionMap[oldModelName]
+                delete imageMap[oldModelName]
+                delete audioMap[oldModelName]
+                delete audioCompletionMap[oldModelName]
+              }
 
-            // Remove current model name from all maps first (always, to handle mode switches or clearing)
-            // This ensures stale entries are removed even when user clears all fields
-            delete priceMap[finalModelName]
-            delete ratioMap[finalModelName]
-            delete cacheMap[finalModelName]
-            delete completionMap[finalModelName]
-            delete imageMap[finalModelName]
-            delete audioMap[finalModelName]
-            delete audioCompletionMap[finalModelName]
+              delete priceMap[finalModelName]
+              delete ratioMap[finalModelName]
+              delete cacheMap[finalModelName]
+              delete completionMap[finalModelName]
+              delete imageMap[finalModelName]
+              delete audioMap[finalModelName]
+              delete audioCompletionMap[finalModelName]
 
-            // Only add new entries if user provided new configuration
-            if (hasRatioConfig) {
-              if (
-                pricingMode === 'per-request' &&
-                values.price &&
-                values.price !== ''
-              ) {
-                priceMap[finalModelName] = parseFloat(values.price)
-              } else if (pricingMode === 'per-token') {
-                if (values.ratio && values.ratio !== '') {
-                  ratioMap[finalModelName] = parseFloat(values.ratio)
-                }
-                if (values.cacheRatio && values.cacheRatio !== '') {
-                  cacheMap[finalModelName] = parseFloat(values.cacheRatio)
-                }
-                if (values.completionRatio && values.completionRatio !== '') {
-                  completionMap[finalModelName] = parseFloat(
-                    values.completionRatio
-                  )
-                }
-                if (values.imageRatio && values.imageRatio !== '') {
-                  imageMap[finalModelName] = parseFloat(values.imageRatio)
-                }
-                if (values.audioRatio && values.audioRatio !== '') {
-                  audioMap[finalModelName] = parseFloat(values.audioRatio)
-                }
+              if (hasRatioConfig) {
                 if (
-                  values.audioCompletionRatio &&
-                  values.audioCompletionRatio !== ''
+                  pricingMode === 'per-request' &&
+                  values.price &&
+                  values.price !== ''
                 ) {
-                  audioCompletionMap[finalModelName] = parseFloat(
-                    values.audioCompletionRatio
-                  )
+                  priceMap[finalModelName] = parseFloat(values.price)
+                } else if (pricingMode === 'per-token') {
+                  if (values.ratio && values.ratio !== '') {
+                    ratioMap[finalModelName] = parseFloat(values.ratio)
+                  }
+                  if (values.cacheRatio && values.cacheRatio !== '') {
+                    cacheMap[finalModelName] = parseFloat(values.cacheRatio)
+                  }
+                  if (values.completionRatio && values.completionRatio !== '') {
+                    completionMap[finalModelName] = parseFloat(
+                      values.completionRatio
+                    )
+                  }
+                  if (values.imageRatio && values.imageRatio !== '') {
+                    imageMap[finalModelName] = parseFloat(values.imageRatio)
+                  }
+                  if (values.audioRatio && values.audioRatio !== '') {
+                    audioMap[finalModelName] = parseFloat(values.audioRatio)
+                  }
+                  if (
+                    values.audioCompletionRatio &&
+                    values.audioCompletionRatio !== ''
+                  ) {
+                    audioCompletionMap[finalModelName] = parseFloat(
+                      values.audioCompletionRatio
+                    )
+                  }
                 }
               }
+            } else if (shouldMoveExistingPricingConfig && oldModelName) {
+              movePricingEntry(priceMap, oldModelName, finalModelName)
+              movePricingEntry(ratioMap, oldModelName, finalModelName)
+              movePricingEntry(cacheMap, oldModelName, finalModelName)
+              movePricingEntry(completionMap, oldModelName, finalModelName)
+              movePricingEntry(imageMap, oldModelName, finalModelName)
+              movePricingEntry(audioMap, oldModelName, finalModelName)
+              movePricingEntry(
+                audioCompletionMap,
+                oldModelName,
+                finalModelName
+              )
             }
 
             // Update system options if there are changes
@@ -621,8 +660,11 @@ export function ModelMutateDrawer({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className='flex h-dvh w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl'>
+    <Sheet open={open} onOpenChange={onOpenChange} preventAutoDismiss>
+      <SheetContent
+        showCloseButton={false}
+        className='flex h-dvh w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl'
+      >
         <SheetHeader className='border-b px-4 py-3 text-start sm:px-6 sm:py-4'>
           <SheetTitle>
             {isEditing ? t('Edit Model') : t('Create Model')}
@@ -922,9 +964,10 @@ export function ModelMutateDrawer({
                 <Label>{t('Pricing mode')}</Label>
                 <RadioGroup
                   value={pricingMode}
-                  onValueChange={(value) =>
+                  onValueChange={(value) => {
+                    markPricingConfigTouched()
                     setPricingMode(value as PricingMode)
-                  }
+                  }}
                 >
                   <div className='flex items-center space-x-2'>
                     <RadioGroupItem value='per-token' id='per-token' />
@@ -956,6 +999,7 @@ export function ModelMutateDrawer({
                           onChange={(e) => {
                             const value = e.target.value
                             if (validateNumber(value)) {
+                              markPricingConfigTouched()
                               field.onChange(value)
                             }
                           }}
@@ -976,9 +1020,10 @@ export function ModelMutateDrawer({
                     <Label>{t('Input mode')}</Label>
                     <RadioGroup
                       value={pricingSubMode}
-                      onValueChange={(value) =>
+                      onValueChange={(value) => {
+                        markPricingConfigTouched()
                         setPricingSubMode(value as PricingSubMode)
-                      }
+                      }}
                     >
                       <div className='flex items-center space-x-2'>
                         <RadioGroupItem value='ratio' id='ratio' />
@@ -1011,6 +1056,7 @@ export function ModelMutateDrawer({
                                 onChange={(e) => {
                                   const value = e.target.value
                                   if (validateNumber(value)) {
+                                    markPricingConfigTouched()
                                     field.onChange(value)
                                     if (value) {
                                       setPromptPrice(
@@ -1047,6 +1093,7 @@ export function ModelMutateDrawer({
                                 onChange={(e) => {
                                   const value = e.target.value
                                   if (validateNumber(value)) {
+                                    markPricingConfigTouched()
                                     field.onChange(value)
                                     const ratio = form.getValues('ratio')
                                     if (value && ratio) {
@@ -1154,6 +1201,7 @@ export function ModelMutateDrawer({
                                 onChange={(e) => {
                                   const value = e.target.value
                                   if (validateNumber(value)) {
+                                    markPricingConfigTouched()
                                     field.onChange(value)
                                   }
                                 }}
@@ -1181,6 +1229,7 @@ export function ModelMutateDrawer({
                                 onChange={(e) => {
                                   const value = e.target.value
                                   if (validateNumber(value)) {
+                                    markPricingConfigTouched()
                                     field.onChange(value)
                                   }
                                 }}
@@ -1208,6 +1257,7 @@ export function ModelMutateDrawer({
                                 onChange={(e) => {
                                   const value = e.target.value
                                   if (validateNumber(value)) {
+                                    markPricingConfigTouched()
                                     field.onChange(value)
                                   }
                                 }}
@@ -1235,6 +1285,7 @@ export function ModelMutateDrawer({
                                 onChange={(e) => {
                                   const value = e.target.value
                                   if (validateNumber(value)) {
+                                    markPricingConfigTouched()
                                     field.onChange(value)
                                   }
                                 }}

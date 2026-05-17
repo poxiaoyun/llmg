@@ -25,3 +25,7 @@ export function getRoleLabelKey(role?: number): string {
 export function getRoleLabel(role?: number): string {
   return t(getRoleLabelKey(role))
 }
+
+export function canAccessSystemSettings(role?: number): boolean {
+  return role === ROLE.SUPER_ADMIN
+}

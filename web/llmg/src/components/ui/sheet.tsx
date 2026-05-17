@@ -7,8 +7,43 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-function Sheet({ ...props }: SheetPrimitive.Root.Props) {
-  return <SheetPrimitive.Root data-slot='sheet' {...props} />
+const AUTO_DISMISS_REASONS = new Set(['outsidePress', 'escapeKey', 'focusOut'])
+
+type SheetProps = SheetPrimitive.Root.Props & {
+  preventAutoDismiss?: boolean
+}
+
+function Sheet({
+  preventAutoDismiss = false,
+  disablePointerDismissal,
+  onOpenChange,
+  ...props
+}: SheetProps) {
+  const handleOpenChange = React.useCallback<
+    NonNullable<SheetPrimitive.Root.Props['onOpenChange']>
+  >(
+    (open, eventDetails) => {
+      if (
+        preventAutoDismiss &&
+        !open &&
+        AUTO_DISMISS_REASONS.has(eventDetails.reason)
+      ) {
+        return
+      }
+
+      onOpenChange?.(open, eventDetails)
+    },
+    [onOpenChange, preventAutoDismiss]
+  )
+
+  return (
+    <SheetPrimitive.Root
+      data-slot='sheet'
+      disablePointerDismissal={preventAutoDismiss || disablePointerDismissal}
+      onOpenChange={handleOpenChange}
+      {...props}
+    />
+  )
 }
 
 function SheetTrigger({ ...props }: SheetPrimitive.Trigger.Props) {
