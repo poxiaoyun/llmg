@@ -1,5 +1,27 @@
 package dto
 
+import "strings"
+
+type BillingContact struct {
+	Company            string `json:"company,omitempty"`
+	Name               string `json:"name,omitempty"`
+	Country            string `json:"country,omitempty"`
+	PaymentInformation string `json:"payment_information,omitempty"`
+	Email              string `json:"email,omitempty"`
+	BillingAddress     string `json:"billing_address,omitempty"`
+	TaxID              string `json:"tax_id,omitempty"`
+}
+
+func (contact BillingContact) IsEmpty() bool {
+	return strings.TrimSpace(contact.Company) == "" &&
+		strings.TrimSpace(contact.Name) == "" &&
+		strings.TrimSpace(contact.Country) == "" &&
+		strings.TrimSpace(contact.PaymentInformation) == "" &&
+		strings.TrimSpace(contact.Email) == "" &&
+		strings.TrimSpace(contact.BillingAddress) == "" &&
+		strings.TrimSpace(contact.TaxID) == ""
+}
+
 type UserSetting struct {
 	NotifyType                       string  `json:"notify_type,omitempty"`                          // QuotaWarningType 额度预警类型
 	QuotaWarningThreshold            float64 `json:"quota_warning_threshold,omitempty"`              // QuotaWarningThreshold 额度预警阈值
@@ -15,6 +37,7 @@ type UserSetting struct {
 	RecordIpLog                      bool    `json:"record_ip_log,omitempty"`                        // 是否记录请求和错误日志IP
 	SidebarModules                   string  `json:"sidebar_modules,omitempty"`                      // SidebarModules 左侧边栏模块配置
 	BillingPreference                string  `json:"billing_preference,omitempty"`                   // BillingPreference 扣费策略（订阅/钱包）
+	BillingContact                   *BillingContact `json:"billing_contact,omitempty"`             // BillingContact 账单联系信息
 	Language                         string  `json:"language,omitempty"`                             // Language 用户语言偏好 (zh, en)
 }
 

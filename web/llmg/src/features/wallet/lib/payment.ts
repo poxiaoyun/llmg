@@ -58,6 +58,13 @@ export function isStripePayment(paymentType: string): boolean {
 }
 
 /**
+ * Check if payment method is native WeChat Pay
+ */
+export function isWeChatNativePayment(paymentType: string): boolean {
+  return paymentType === PAYMENT_TYPES.WECHAT_NATIVE
+}
+
+/**
  * Check if payment method is Waffo Pancake
  *
  * Pancake is a metered-style payment that goes through a dedicated checkout
@@ -102,6 +109,15 @@ export function getDefaultPaymentType(topupInfo: TopupInfo | null): string {
 export function getMinTopupAmount(topupInfo: TopupInfo | null): number {
   if (!topupInfo) {
     return DEFAULT_MIN_TOPUP
+  }
+
+  if (topupInfo.pay_methods?.length) {
+    const methodMinTopups = topupInfo.pay_methods
+      .map((method) => Number(method.min_topup) || 0)
+      .filter((value) => value > 0)
+    if (methodMinTopups.length > 0) {
+      return Math.min(...methodMinTopups)
+    }
   }
 
   if (topupInfo.enable_online_topup) {

@@ -12,19 +12,21 @@ import (
 )
 
 type TopUp struct {
-	Id              int     `json:"id"`
-	UserId          int     `json:"user_id" gorm:"index"`
-	Amount          int64   `json:"amount"`
-	Money           float64 `json:"money"`
-	TradeNo         string  `json:"trade_no" gorm:"unique;type:varchar(255);index"`
-	PaymentMethod   string  `json:"payment_method" gorm:"type:varchar(50)"`
-	PaymentProvider string  `json:"payment_provider" gorm:"type:varchar(50);default:''"`
-	CreateTime      int64   `json:"create_time"`
-	CompleteTime    int64   `json:"complete_time"`
-	Status          string  `json:"status"`
+	Id                     int     `json:"id"`
+	UserId                 int     `json:"user_id" gorm:"index"`
+	Amount                 int64   `json:"amount"`
+	Money                  float64 `json:"money"`
+	TradeNo                string  `json:"trade_no" gorm:"unique;type:varchar(255);index"`
+	PaymentMethod          string  `json:"payment_method" gorm:"type:varchar(50)"`
+	PaymentProvider        string  `json:"payment_provider" gorm:"type:varchar(50);default:''"`
+	CreateTime             int64   `json:"create_time"`
+	CompleteTime           int64   `json:"complete_time"`
+	Status                 string  `json:"status"`
+	BillingContactSnapshot string  `json:"billing_contact_snapshot,omitempty" gorm:"type:text"`
 }
 
 const (
+	PaymentMethodWeChatNative = "wechat_native"
 	PaymentMethodStripe       = "stripe"
 	PaymentMethodCreem        = "creem"
 	PaymentMethodWaffo        = "waffo"
@@ -32,6 +34,7 @@ const (
 )
 
 const (
+	PaymentProviderWeChatPay     = "wechatpay"
 	PaymentProviderEpay         = "epay"
 	PaymentProviderStripe       = "stripe"
 	PaymentProviderCreem        = "creem"
@@ -75,6 +78,27 @@ func GetTopUpByTradeNo(tradeNo string) *TopUp {
 		return nil
 	}
 	return topUp
+}
+
+func GetUserBillingContactSnapshot(userId int) string {
+	if userId == 0 {
+		return ""
+	}
+	user, err := GetUserById(userId, false)
+	if err != nil {
+		common.SysError("failed to load user billing contact snapshot: " + err.Error())
+		return ""
+	}
+	setting := user.GetSetting()
+	if setting.BillingContact == nil || setting.BillingContact.IsEmpty() {
+		return ""
+	}
+	payload, err := common.Marshal(setting.BillingContact)
+	if err != nil {
+		common.SysError("failed to marshal billing contact snapshot: " + err.Error())
+		return ""
+	}
+	return string(payload)
 }
 
 func UpdatePendingTopUpStatus(tradeNo string, expectedPaymentProvider string, targetStatus string) error {
@@ -524,6 +548,69 @@ func RechargeWaffo(tradeNo string, callerIp string) (err error) {
 
 	return nil
 }
+
+	func RechargeWeChatPay(tradeNo string, callerIp string) (err error) {
+		if tradeNo == "" {
+			return errors.New("未提供支付单号")
+		}
+
+		var quotaToAdd int
+		topUp := &TopUp{}
+
+		refCol := "`trade_no`"
+		if common.UsingPostgreSQL {
+			refCol = `"trade_no"`
+		}
+
+		err = DB.Transaction(func(tx *gorm.DB) error {
+			err := tx.Set("gorm:query_option", "FOR UPDATE").Where(refCol+" = ?", tradeNo).First(topUp).Error
+			if err != nil {
+				return errors.New("充值订单不存在")
+			}
+
+			if topUp.PaymentProvider != PaymentProviderWeChatPay {
+				return ErrPaymentMethodMismatch
+			}
+
+			if topUp.Status == common.TopUpStatusSuccess {
+				return nil
+			}
+
+			if topUp.Status != common.TopUpStatusPending {
+				return errors.New("充值订单状态错误")
+			}
+
+			dAmount := decimal.NewFromInt(topUp.Amount)
+			dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
+			quotaToAdd = int(dAmount.Mul(dQuotaPerUnit).IntPart())
+			if quotaToAdd <= 0 {
+				return errors.New("无效的充值额度")
+			}
+
+			topUp.CompleteTime = common.GetTimestamp()
+			topUp.Status = common.TopUpStatusSuccess
+			if err := tx.Save(topUp).Error; err != nil {
+				return err
+			}
+
+			if err := tx.Model(&User{}).Where("id = ?", topUp.UserId).Update("quota", gorm.Expr("quota + ?", quotaToAdd)).Error; err != nil {
+				return err
+			}
+
+			return nil
+		})
+
+		if err != nil {
+			common.SysError("wechat pay topup failed: " + err.Error())
+			return errors.New("充值失败，请稍后重试")
+		}
+
+		if quotaToAdd > 0 {
+			RecordTopupLog(topUp.UserId, fmt.Sprintf("微信支付充值成功，充值额度: %v，支付金额: %.2f", logger.FormatQuota(quotaToAdd), topUp.Money), callerIp, topUp.PaymentMethod, PaymentMethodWeChatNative)
+		}
+
+		return nil
+	}
 
 func RechargeWaffoPancake(tradeNo string) (err error) {
 	if tradeNo == "" {

@@ -4404,6 +4404,17 @@
     "Zero retention": "Không lưu dữ liệu",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+    "WeChat Pay Gateway": "Cổng thanh toán WeChat Pay",
+    "Configure native WeChat Pay merchant integration": "Cấu hình tích hợp merchant WeChat Pay native",
+    "App ID": "ID ứng dụng",
+    "Certificate Serial Number": "Số sê-ri chứng chỉ",
+    "Merchant Private Key": "Khóa riêng thương gia",
+    "API v3 Key": "Khóa API v3",
+    "Save WeChat Pay settings": "Lưu cài đặt WeChat Pay",
+    "App ID is required": "Yêu cầu App ID",
+    "Certificate serial number is required": "Yêu cầu số sê-ri chứng chỉ",
+    "Merchant private key is required": "Yêu cầu khóa riêng thương gia",
+    "API v3 key is required": "Yêu cầu khóa API v3"
   }
 }

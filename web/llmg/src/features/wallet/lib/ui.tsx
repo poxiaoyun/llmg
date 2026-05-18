@@ -75,10 +75,16 @@ export function getPaymentIcon(
         />
       )
     case PAYMENT_TYPES.WECHAT:
+    case PAYMENT_TYPES.WECHAT_NATIVE:
       return (
         <SiWechat
           className={className}
-          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WECHAT] }}
+          style={{
+            color:
+              PAYMENT_ICON_COLORS[
+                paymentType as keyof typeof PAYMENT_ICON_COLORS
+              ],
+          }}
         />
       )
     case PAYMENT_TYPES.STRIPE:

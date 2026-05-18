@@ -4405,6 +4405,17 @@
     "Zero retention": "零数据保留",
     "Zhipu": "智谱",
     "Zhipu V4": "智谱 V4",
-    "Zoom": "缩放"
+    "Zoom": "缩放",
+    "WeChat Pay Gateway": "微信支付网关",
+    "Configure native WeChat Pay merchant integration": "配置原生微信支付商户集成",
+    "App ID": "应用 ID",
+    "Certificate Serial Number": "证书序列号",
+    "Merchant Private Key": "商户私钥",
+    "API v3 Key": "API v3 密钥",
+    "Save WeChat Pay settings": "保存微信支付设置",
+    "App ID is required": "应用 ID 为必填项",
+    "Certificate serial number is required": "证书序列号为必填项",
+    "Merchant private key is required": "商户私钥为必填项",
+    "API v3 key is required": "API v3 密钥为必填项"
   }
 }

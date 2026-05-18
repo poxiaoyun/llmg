@@ -4,12 +4,14 @@ import type {
   PaymentRequest,
   AmountRequest,
   AffiliateTransferRequest,
+  BillingContact,
   ApiResponse,
   TopupInfoResponse,
   RedemptionResponse,
   AmountResponse,
   PaymentResponse,
   StripePaymentResponse,
+  WeChatPaymentResponse,
   AffiliateCodeResponse,
   AffiliateTransferResponse,
   BillingHistoryResponse,
@@ -103,6 +105,18 @@ export async function requestStripePayment(
 }
 
 /**
+ * Request native WeChat payment
+ */
+export async function requestWeChatPayment(
+  request: PaymentRequest
+): Promise<WeChatPaymentResponse> {
+  const res = await api.post('/api/user/wechat/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
  * Request Creem payment
  */
 export async function requestCreemPayment(
@@ -165,6 +179,18 @@ export async function transferAffiliateQuota(
   request: AffiliateTransferRequest
 ): Promise<AffiliateTransferResponse> {
   const res = await api.post('/api/user/aff_transfer', request)
+  return res.data
+}
+
+/**
+ * Save billing contact for current user
+ */
+export async function updateUserBillingContact(
+  contact: BillingContact
+): Promise<ApiResponse> {
+  const res = await api.put('/api/user/setting', {
+    billing_contact: contact,
+  })
   return res.data
 }
 

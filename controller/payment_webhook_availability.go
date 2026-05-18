@@ -5,7 +5,30 @@ import (
 
 	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
+	"github.com/QuantumNous/new-api/setting/system_setting"
 )
+
+func isWeChatPayTopUpEnabled() bool {
+	callbackConfigured := strings.TrimSpace(setting.WeChatPayNotifyUrl) != "" ||
+		strings.TrimSpace(operation_setting.CustomCallbackAddress) != "" ||
+		strings.TrimSpace(system_setting.ServerAddress) != ""
+
+	return setting.WeChatPayEnabled &&
+		strings.TrimSpace(setting.WeChatPayAppID) != "" &&
+		strings.TrimSpace(setting.WeChatPayMerchantID) != "" &&
+		strings.TrimSpace(setting.WeChatPayMerchantCertificateSerialNumber) != "" &&
+		strings.TrimSpace(setting.WeChatPayMerchantPrivateKey) != "" &&
+		strings.TrimSpace(setting.WeChatPayAPIv3Key) != "" &&
+		callbackConfigured
+}
+
+func isWeChatPayWebhookConfigured() bool {
+	return isWeChatPayTopUpEnabled()
+}
+
+func isWeChatPayWebhookEnabled() bool {
+	return isWeChatPayWebhookConfigured()
+}
 
 func isStripeTopUpEnabled() bool {
 	return strings.TrimSpace(setting.StripeApiSecret) != "" &&

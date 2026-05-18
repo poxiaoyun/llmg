@@ -11,6 +11,16 @@ export interface ApiResponse<T = unknown> {
   data?: T
 }
 
+export interface BillingContact {
+  company: string
+  name: string
+  country: string
+  payment_information: string
+  email: string
+  billing_address: string
+  tax_id: string
+}
+
 /**
  * Standard API response types
  */
@@ -21,6 +31,7 @@ export type PaymentResponse = ApiResponse<Record<string, unknown>> & {
   url?: string
 }
 export type StripePaymentResponse = ApiResponse<{ pay_link: string }>
+export type WeChatPaymentResponse = ApiResponse<WeChatPaymentData>
 export type AffiliateCodeResponse = ApiResponse<string>
 export type AffiliateTransferResponse = ApiResponse
 export type CreemPaymentResponse = ApiResponse<{ checkout_url: string }>
@@ -79,6 +90,17 @@ export interface PaymentMethod {
   icon?: string
 }
 
+export interface WeChatPaymentData {
+  /** Native payment order number */
+  trade_no: string
+  /** WeChat code_url used for QR rendering */
+  code_url: string
+  /** Unix timestamp when QR expires */
+  expires_at?: number
+  /** Optional return URL configured by backend */
+  return_url?: string
+}
+
 /**
  * Waffo payment method configuration
  */
@@ -101,10 +123,14 @@ export interface TopupInfo {
   enable_online_topup: boolean
   /** Whether Stripe topup is enabled */
   enable_stripe_topup: boolean
+  /** Whether native WeChat Pay topup is enabled */
+  enable_wechat_pay_topup?: boolean
   /** Available payment methods */
   pay_methods: PaymentMethod[]
   /** Minimum topup amount for online topup */
   min_topup: number
+  /** Minimum topup amount for native WeChat Pay */
+  wechat_pay_min_topup?: number
   /** Minimum topup amount for Stripe */
   stripe_min_topup: number
   /** Preset amount options */
@@ -199,6 +225,8 @@ export interface UserWalletData {
   id: number
   /** Username */
   username: string
+  /** Account email */
+  email?: string
   /** Current quota balance */
   quota: number
   /** Total used quota */
@@ -213,6 +241,8 @@ export interface UserWalletData {
   aff_count: number
   /** User group */
   group: string
+  /** Saved billing contact */
+  billing_contact?: BillingContact
 }
 
 /**
@@ -242,6 +272,8 @@ export interface TopupRecord {
   complete_time?: number
   /** Payment status */
   status: TopupStatus
+  /** Billing contact snapshot captured when the order was created */
+  billing_contact_snapshot?: string
 }
 
 /**

@@ -80,6 +80,15 @@ func InitOptionMap() {
 	common.OptionMap["Price"] = strconv.FormatFloat(operation_setting.Price, 'f', -1, 64)
 	common.OptionMap["USDExchangeRate"] = strconv.FormatFloat(operation_setting.USDExchangeRate, 'f', -1, 64)
 	common.OptionMap["MinTopUp"] = strconv.Itoa(operation_setting.MinTopUp)
+	common.OptionMap["WeChatPayEnabled"] = strconv.FormatBool(setting.WeChatPayEnabled)
+	common.OptionMap["WeChatPayAppID"] = setting.WeChatPayAppID
+	common.OptionMap["WeChatPayMerchantID"] = setting.WeChatPayMerchantID
+	common.OptionMap["WeChatPayMerchantCertificateSerialNumber"] = setting.WeChatPayMerchantCertificateSerialNumber
+	common.OptionMap["WeChatPayMerchantPrivateKey"] = setting.WeChatPayMerchantPrivateKey
+	common.OptionMap["WeChatPayAPIv3Key"] = setting.WeChatPayAPIv3Key
+	common.OptionMap["WeChatPayNotifyUrl"] = setting.WeChatPayNotifyUrl
+	common.OptionMap["WeChatPayReturnUrl"] = setting.WeChatPayReturnUrl
+	common.OptionMap["WeChatPayMinTopUp"] = strconv.Itoa(setting.WeChatPayMinTopUp)
 	common.OptionMap["StripeMinTopUp"] = strconv.Itoa(setting.StripeMinTopUp)
 	common.OptionMap["StripeApiSecret"] = setting.StripeApiSecret
 	common.OptionMap["StripeWebhookSecret"] = setting.StripeWebhookSecret
@@ -378,6 +387,24 @@ func updateOptionMap(key string, value string) (err error) {
 		operation_setting.USDExchangeRate, _ = strconv.ParseFloat(value, 64)
 	case "MinTopUp":
 		operation_setting.MinTopUp, _ = strconv.Atoi(value)
+	case "WeChatPayEnabled":
+		setting.WeChatPayEnabled = value == "true"
+	case "WeChatPayAppID":
+		setting.WeChatPayAppID = value
+	case "WeChatPayMerchantID":
+		setting.WeChatPayMerchantID = value
+	case "WeChatPayMerchantCertificateSerialNumber":
+		setting.WeChatPayMerchantCertificateSerialNumber = value
+	case "WeChatPayMerchantPrivateKey":
+		setting.WeChatPayMerchantPrivateKey = value
+	case "WeChatPayAPIv3Key":
+		setting.WeChatPayAPIv3Key = value
+	case "WeChatPayNotifyUrl":
+		setting.WeChatPayNotifyUrl = value
+	case "WeChatPayReturnUrl":
+		setting.WeChatPayReturnUrl = value
+	case "WeChatPayMinTopUp":
+		setting.WeChatPayMinTopUp, _ = strconv.Atoi(value)
 	case "StripeApiSecret":
 		setting.StripeApiSecret = value
 	case "StripeWebhookSecret":

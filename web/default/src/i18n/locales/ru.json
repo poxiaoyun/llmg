@@ -4404,6 +4404,17 @@
     "Zero retention": "Без хранения данных",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+    "WeChat Pay Gateway": "Платежный шлюз WeChat Pay",
+    "Configure native WeChat Pay merchant integration": "Настройка нативной интеграции продавца WeChat Pay",
+    "App ID": "ID приложения",
+    "Certificate Serial Number": "Серийный номер сертификата",
+    "Merchant Private Key": "Закрытый ключ продавца",
+    "API v3 Key": "Ключ API v3",
+    "Save WeChat Pay settings": "Сохранить настройки WeChat Pay",
+    "App ID is required": "Требуется ID приложения",
+    "Certificate serial number is required": "Требуется серийный номер сертификата",
+    "Merchant private key is required": "Требуется закрытый ключ продавца",
+    "API v3 key is required": "Требуется ключ API v3"
   }
 }

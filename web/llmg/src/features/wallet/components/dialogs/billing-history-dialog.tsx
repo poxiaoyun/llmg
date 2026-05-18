@@ -41,10 +41,33 @@ import {
   getPaymentMethodName,
   formatTimestamp,
 } from '../../lib/billing'
+import type { BillingContact, TopupRecord } from '../../types'
 
 interface BillingHistoryDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+}
+
+function parseBillingContactSnapshot(record: TopupRecord): BillingContact | null {
+  if (!record.billing_contact_snapshot) {
+    return null
+  }
+
+  try {
+    return JSON.parse(record.billing_contact_snapshot) as BillingContact
+  } catch {
+    return null
+  }
+}
+
+function hasBillingSnapshot(contact: BillingContact | null): contact is BillingContact {
+  if (!contact) {
+    return false
+  }
+
+  return Object.values(contact).some(
+    (value) => typeof value === 'string' && value.trim().length > 0
+  )
 }
 
 export function BillingHistoryDialog({
@@ -166,6 +189,9 @@ export function BillingHistoryDialog({
                 <div className='space-y-3'>
                   {records.map((record) => {
                     const statusConfig = getStatusConfig(record.status)
+                    const billingSnapshot = parseBillingContactSnapshot(record)
+                    const showBillingSnapshot = hasBillingSnapshot(billingSnapshot)
+
                     return (
                       <div
                         key={record.id}
@@ -242,6 +268,94 @@ export function BillingHistoryDialog({
                             </div>
                           </div>
                         </div>
+
+                        {showBillingSnapshot && billingSnapshot && (
+                          <div className='mt-4 rounded-xl border border-border/70 bg-background/70 p-3'>
+                            <div className='mb-3 flex items-center justify-between gap-2'>
+                              <div>
+                                <div className='text-sm font-medium'>
+                                  {t('Billing Contact Snapshot')}
+                                </div>
+                                <div className='text-muted-foreground text-xs'>
+                                  {t('Captured with the order for invoice records.')}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className='grid gap-3 sm:grid-cols-2'>
+                              {billingSnapshot.company && (
+                                <div className='space-y-1'>
+                                  <Label className='text-muted-foreground text-xs'>
+                                    {t('Company')}
+                                  </Label>
+                                  <div className='text-sm font-medium'>
+                                    {billingSnapshot.company}
+                                  </div>
+                                </div>
+                              )}
+                              {billingSnapshot.name && (
+                                <div className='space-y-1'>
+                                  <Label className='text-muted-foreground text-xs'>
+                                    {t('Name')}
+                                  </Label>
+                                  <div className='text-sm font-medium'>
+                                    {billingSnapshot.name}
+                                  </div>
+                                </div>
+                              )}
+                              {billingSnapshot.email && (
+                                <div className='space-y-1'>
+                                  <Label className='text-muted-foreground text-xs'>
+                                    {t('Email')}
+                                  </Label>
+                                  <div className='text-sm font-medium'>
+                                    {billingSnapshot.email}
+                                  </div>
+                                </div>
+                              )}
+                              {billingSnapshot.country && (
+                                <div className='space-y-1'>
+                                  <Label className='text-muted-foreground text-xs'>
+                                    {t('Country')}
+                                  </Label>
+                                  <div className='text-sm font-medium'>
+                                    {billingSnapshot.country}
+                                  </div>
+                                </div>
+                              )}
+                              {billingSnapshot.tax_id && (
+                                <div className='space-y-1'>
+                                  <Label className='text-muted-foreground text-xs'>
+                                    {t('Tax ID')}
+                                  </Label>
+                                  <div className='text-sm font-medium'>
+                                    {billingSnapshot.tax_id}
+                                  </div>
+                                </div>
+                              )}
+                              {billingSnapshot.payment_information && (
+                                <div className='space-y-1 sm:col-span-2'>
+                                  <Label className='text-muted-foreground text-xs'>
+                                    {t('Payment Information')}
+                                  </Label>
+                                  <div className='text-sm leading-6 whitespace-pre-wrap'>
+                                    {billingSnapshot.payment_information}
+                                  </div>
+                                </div>
+                              )}
+                              {billingSnapshot.billing_address && (
+                                <div className='space-y-1 sm:col-span-2'>
+                                  <Label className='text-muted-foreground text-xs'>
+                                    {t('Billing Address')}
+                                  </Label>
+                                  <div className='text-sm leading-6 whitespace-pre-wrap'>
+                                    {billingSnapshot.billing_address}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
 
                         {/* Admin Actions */}
                         {isAdmin && record.status === 'pending' && (

@@ -38,6 +38,10 @@ import {
   WaffoSettingsSection,
   type WaffoSettingsValues,
 } from './waffo-settings-section'
+import {
+  WeChatPaySettingsSection,
+  type WeChatPaySettingsValues,
+} from './wechat-pay-settings-section'
 
 const paymentSchema = z.object({
   PayAddress: z.string().refine((value) => {
@@ -109,12 +113,14 @@ type PaymentFormValues = z.infer<typeof paymentSchema>
 
 type PaymentSettingsSectionProps = {
   defaultValues: PaymentFormValues
+  weChatPayDefaultValues: WeChatPaySettingsValues
   waffoDefaultValues: WaffoSettingsValues
   waffoPancakeDefaultValues: WaffoPancakeSettingsValues
 }
 
 export function PaymentSettingsSection({
   defaultValues,
+  weChatPayDefaultValues,
   waffoDefaultValues,
   waffoPancakeDefaultValues,
 }: PaymentSettingsSectionProps) {
@@ -1283,6 +1289,10 @@ export function PaymentSettingsSection({
           </Button>
         </form>
       </Form>
+
+      <Separator />
+
+      <WeChatPaySettingsSection defaultValues={weChatPayDefaultValues} />
 
       <Separator />
 

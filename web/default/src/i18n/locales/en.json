@@ -4405,6 +4405,17 @@
     "Zero retention": "Zero retention",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+    "WeChat Pay Gateway": "WeChat Pay Gateway",
+    "Configure native WeChat Pay merchant integration": "Configure native WeChat Pay merchant integration",
+    "App ID": "App ID",
+    "Certificate Serial Number": "Certificate Serial Number",
+    "Merchant Private Key": "Merchant Private Key",
+    "API v3 Key": "API v3 Key",
+    "Save WeChat Pay settings": "Save WeChat Pay settings",
+    "App ID is required": "App ID is required",
+    "Certificate serial number is required": "Certificate serial number is required",
+    "Merchant private key is required": "Merchant private key is required",
+    "API v3 key is required": "API v3 key is required"
   }
 }

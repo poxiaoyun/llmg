@@ -48,7 +48,11 @@ interface SubscriptionPlansCardProps {
 
 function getEpayMethods(payMethods: PaymentMethod[] = []): PaymentMethod[] {
   return payMethods.filter(
-    (m) => m?.type && m.type !== 'stripe' && m.type !== 'creem'
+    (m) =>
+      m?.type &&
+      m.type !== 'stripe' &&
+      m.type !== 'creem' &&
+      m.type !== 'wechat_native'
   )
 }
 
@@ -238,10 +242,11 @@ export function SubscriptionPlansCard({
         title={t('Subscription Plans')}
         description={t('Purchase a plan to enjoy model benefits')}
         icon={<Crown className='h-4 w-4' />}
+        className='border-border/80 bg-gradient-to-br from-background via-muted/10 to-muted/25'
         contentClassName='space-y-4 sm:space-y-5'
       >
         {/* My subscriptions & billing preference */}
-        <div className='rounded-xl border p-3 sm:p-4'>
+        <div className='rounded-2xl border border-border/70 bg-background/80 p-3 sm:p-4'>
           <div className='flex flex-wrap items-center justify-between gap-2.5 sm:gap-3'>
             <div className='flex min-w-0 flex-wrap items-center gap-2'>
               <span className='text-sm font-medium'>
@@ -308,7 +313,7 @@ export function SubscriptionPlansCard({
                 value={displayPref}
                 onValueChange={(v) => v !== null && handlePreferenceChange(v)}
               >
-                <SelectTrigger className='h-8 flex-1 text-xs sm:w-[140px] sm:flex-none'>
+                <SelectTrigger className='h-8 flex-1 bg-background/80 text-xs sm:w-[140px] sm:flex-none'>
                   <SelectValue>
                     {getBillingPreferenceLabel(displayPref, t)}
                   </SelectValue>
@@ -389,7 +394,7 @@ export function SubscriptionPlansCard({
                   return (
                     <div
                       key={subscription?.id}
-                      className='bg-background rounded-md border p-3 text-xs'
+                      className='rounded-xl border border-border/70 bg-background/80 p-3 text-xs'
                     >
                       <div className='flex items-center justify-between'>
                         <div className='flex items-center gap-2'>
@@ -517,8 +522,8 @@ export function SubscriptionPlansCard({
                 <Card
                   key={plan.id}
                   className={cn(
-                    'transition-shadow hover:shadow-md',
-                    isPopular && 'border-primary/70 shadow-sm'
+                    'border-border/70 bg-background/80 transition-all hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_18px_45px_-32px_rgba(0,0,0,0.4)]',
+                    isPopular && 'border-foreground/25 shadow-[0_20px_50px_-34px_rgba(0,0,0,0.45)]'
                   )}
                 >
                   <CardContent className='flex h-full flex-col p-3.5 sm:p-4'>
@@ -535,9 +540,10 @@ export function SubscriptionPlansCard({
                       </div>
                       {isPopular && (
                         <StatusBadge
-                          variant='info'
+                          variant='neutral'
+                          showDot={false}
                           copyable={false}
-                          className='shrink-0'
+                          className='shrink-0 rounded-full border border-border/70 bg-muted/60 px-2 py-1 text-[11px] text-foreground'
                         >
                           <Sparkles className='h-3 w-3' />
                           {t('Recommended')}
@@ -546,7 +552,7 @@ export function SubscriptionPlansCard({
                     </div>
 
                     <div className='py-2'>
-                      <span className='text-primary text-2xl font-bold'>
+                      <span className='text-foreground text-2xl font-semibold tracking-tight'>
                         ${price}
                       </span>
                     </div>
@@ -557,7 +563,7 @@ export function SubscriptionPlansCard({
                           key={label}
                           className='text-muted-foreground flex items-center gap-2 text-xs'
                         >
-                          <Check className='text-primary h-3 w-3 shrink-0' />
+                          <Check className='text-foreground/70 h-3 w-3 shrink-0' />
                           <span>{label}</span>
                         </div>
                       ))}

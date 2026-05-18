@@ -203,6 +203,15 @@ export type BillingSettings = {
   StripeUnitPrice: number
   StripeMinTopUp: number
   StripePromotionCodesEnabled: boolean
+  WeChatPayEnabled: boolean
+  WeChatPayAppID: string
+  WeChatPayMerchantID: string
+  WeChatPayMerchantCertificateSerialNumber: string
+  WeChatPayMerchantPrivateKey: string
+  WeChatPayAPIv3Key: string
+  WeChatPayNotifyUrl: string
+  WeChatPayReturnUrl: string
+  WeChatPayMinTopUp: number
   CreemApiKey: string
   CreemWebhookSecret: string
   CreemTestMode: boolean

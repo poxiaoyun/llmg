@@ -205,7 +205,8 @@ type SubscriptionOrder struct {
 	CreateTime      int64  `json:"create_time"`
 	CompleteTime    int64  `json:"complete_time"`
 
-	ProviderPayload string `json:"provider_payload" gorm:"type:text"`
+	ProviderPayload        string `json:"provider_payload" gorm:"type:text"`
+	BillingContactSnapshot string `json:"billing_contact_snapshot,omitempty" gorm:"type:text"`
 }
 
 func (o *SubscriptionOrder) Insert() error {

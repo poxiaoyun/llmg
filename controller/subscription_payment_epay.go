@@ -82,14 +82,15 @@ func SubscriptionRequestEpay(c *gin.Context) {
 	}
 
 	order := &model.SubscriptionOrder{
-		UserId:          userId,
-		PlanId:          plan.Id,
-		Money:           plan.PriceAmount,
-		TradeNo:         tradeNo,
-		PaymentMethod:   req.PaymentMethod,
-		PaymentProvider: model.PaymentProviderEpay,
-		CreateTime:      time.Now().Unix(),
-		Status:          common.TopUpStatusPending,
+		UserId:                 userId,
+		PlanId:                 plan.Id,
+		Money:                  plan.PriceAmount,
+		TradeNo:                tradeNo,
+		PaymentMethod:          req.PaymentMethod,
+		PaymentProvider:        model.PaymentProviderEpay,
+		CreateTime:             time.Now().Unix(),
+		Status:                 common.TopUpStatusPending,
+		BillingContactSnapshot: model.GetUserBillingContactSnapshot(userId),
 	}
 	if err := order.Insert(); err != nil {
 		common.ApiErrorMsg(c, "创建订单失败")
