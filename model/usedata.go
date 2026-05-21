@@ -21,6 +21,24 @@ type QuotaData struct {
 	Quota     int    `json:"quota" gorm:"default:0"`
 }
 
+type PlatformUsageSummary struct {
+	TotalCount         int64 `json:"total_count"`
+	TotalQuota         int64 `json:"total_quota"`
+	TotalTokens        int64 `json:"total_tokens"`
+	ActiveUsers        int64 `json:"active_users"`
+	OnlineUsers        int64 `json:"online_users"`
+	DistinctModels     int64 `json:"distinct_models"`
+	OnlineWindowMinute int64 `json:"online_window_minutes"`
+}
+
+type platformUsageSummaryRow struct {
+	TotalCount     int64 `gorm:"column:total_count"`
+	TotalQuota     int64 `gorm:"column:total_quota"`
+	TotalTokens    int64 `gorm:"column:total_tokens"`
+	ActiveUsers    int64 `gorm:"column:active_users"`
+	DistinctModels int64 `gorm:"column:distinct_models"`
+}
+
 func UpdateQuotaData() {
 	for {
 		if common.DataExportEnabled {
@@ -135,4 +153,34 @@ func GetAllQuotaDates(startTime int64, endTime int64, username string) (quotaDat
 	//err = DB.Table("quota_data").Where("created_at >= ? and created_at <= ?", startTime, endTime).Find(&quotaDatas).Error
 	err = DB.Table("quota_data").Select("model_name, sum(count) as count, sum(quota) as quota, sum(token_used) as token_used, created_at").Where("created_at >= ? and created_at <= ?", startTime, endTime).Group("model_name, created_at").Find(&quotaDatas).Error
 	return quotaDatas, err
+}
+
+func GetPlatformUsageSummary(startTime int64, endTime int64, onlineSince int64) (PlatformUsageSummary, error) {
+	var row platformUsageSummaryRow
+	err := DB.Table("quota_data").
+		Select("COALESCE(SUM(count), 0) as total_count, COALESCE(SUM(quota), 0) as total_quota, COALESCE(SUM(token_used), 0) as total_tokens, COUNT(DISTINCT CASE WHEN user_id > 0 THEN user_id END) as active_users, COUNT(DISTINCT CASE WHEN model_name <> '' THEN model_name END) as distinct_models").
+		Where("created_at >= ? and created_at <= ?", startTime, endTime).
+		Scan(&row).Error
+	if err != nil {
+		return PlatformUsageSummary{}, err
+	}
+
+	summary := PlatformUsageSummary{
+		TotalCount:     row.TotalCount,
+		TotalQuota:     row.TotalQuota,
+		TotalTokens:    row.TotalTokens,
+		ActiveUsers:    row.ActiveUsers,
+		DistinctModels: row.DistinctModels,
+	}
+
+	if onlineSince > 0 {
+		err = DB.Model(&User{}).
+			Where("last_login_at >= ? AND status = ?", onlineSince, common.UserStatusEnabled).
+			Count(&summary.OnlineUsers).Error
+		if err != nil {
+			return PlatformUsageSummary{}, err
+		}
+	}
+
+	return summary, nil
 }

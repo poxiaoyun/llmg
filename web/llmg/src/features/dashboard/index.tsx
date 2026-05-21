@@ -20,6 +20,7 @@ import {
   type DashboardSectionId,
   DASHBOARD_DEFAULT_SECTION,
   DASHBOARD_SECTION_IDS,
+  isDashboardAdminSection,
 } from './section-registry'
 import {
   type DashboardChartPreferences,
@@ -50,6 +51,12 @@ const LazyConsumptionDistributionChart = lazy(() =>
 const LazyPerformanceOverview = lazy(() =>
   import('./components/models/performance-overview').then((m) => ({
     default: m.PerformanceOverview,
+  }))
+)
+
+const LazyPlatformDashboard = lazy(() =>
+  import('./components/platform/platform-dashboard').then((m) => ({
+    default: m.PlatformDashboard,
   }))
 )
 
@@ -122,6 +129,10 @@ const SECTION_META: Record<
     titleKey: 'Overview',
     descriptionKey: 'View dashboard overview and statistics',
   },
+  platform: {
+    titleKey: 'Platform Analytics',
+    descriptionKey: 'View platform-wide usage summary and service health',
+  },
   models: {
     titleKey: 'Model Call Analytics',
     descriptionKey: 'View model call count analytics and charts',
@@ -178,7 +189,8 @@ export function Dashboard() {
   const visibleSections = useMemo(
     () =>
       DASHBOARD_SECTION_IDS.filter(
-        (section) => section !== 'overview' && (section !== 'users' || isAdmin)
+        (section) =>
+          section !== 'overview' && (!isDashboardAdminSection(section) || isAdmin)
       ),
     [isAdmin]
   )
@@ -241,6 +253,13 @@ export function Dashboard() {
             </div>
           )}
           {activeSection === 'overview' && <OverviewDashboard />}
+          {activeSection === 'platform' && (
+            <FadeIn>
+              <Suspense fallback={<PerformanceOverviewFallback />}>
+                <LazyPlatformDashboard />
+              </Suspense>
+            </FadeIn>
+          )}
           {activeSection === 'models' && (
             <>
               <FadeIn>

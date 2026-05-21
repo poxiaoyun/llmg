@@ -357,20 +357,22 @@ export function OverviewDashboard() {
   const usedQuota = Number(user?.used_quota ?? 0)
 
   const apiKeysQuery = useQuery({
-    queryKey: ['dashboard', 'overview', 'api-keys'],
+    queryKey: ['dashboard', 'overview', 'api-keys', user?.id ?? null],
     queryFn: async () => {
       const result = await getApiKeys({ p: 1, size: 10 })
       return result.success ? (result.data?.items ?? []) : []
     },
+    enabled: Boolean(user?.id),
     staleTime: 60 * 1000,
   })
 
   const modelsQuery = useQuery({
-    queryKey: ['dashboard', 'overview', 'user-models'],
+    queryKey: ['dashboard', 'overview', 'user-models', user?.id ?? null],
     queryFn: async () => {
       const result = await getUserModels()
       return result.success ? (result.data ?? []) : []
     },
+    enabled: Boolean(user?.id),
     staleTime: 5 * 60 * 1000,
   })
 
@@ -380,13 +382,19 @@ export function OverviewDashboard() {
   )
 
   const realKeyQuery = useQuery({
-    queryKey: ['dashboard', 'overview', 'token-key', preferredKey?.id],
+    queryKey: [
+      'dashboard',
+      'overview',
+      'token-key',
+      user?.id ?? null,
+      preferredKey?.id ?? null,
+    ],
     queryFn: async () => {
       if (!preferredKey?.id) return ''
       const result = await fetchTokenKey(preferredKey.id)
       return result.success && result.data?.key ? `sk-${result.data.key}` : ''
     },
-    enabled: Boolean(preferredKey?.id),
+    enabled: Boolean(user?.id && preferredKey?.id),
     staleTime: 5 * 60 * 1000,
   })
 

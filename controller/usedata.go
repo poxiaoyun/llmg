@@ -3,11 +3,17 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/model"
 
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	maxDashboardRangeSeconds = 30 * 24 * 60 * 60
+	onlineUserWindowMinutes = 15
 )
 
 func GetAllQuotaDates(c *gin.Context) {
@@ -47,7 +53,7 @@ func GetUserQuotaDates(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
 	// 判断时间跨度是否超过 1 个月
-	if endTimestamp-startTimestamp > 2592000 {
+	if endTimestamp-startTimestamp > maxDashboardRangeSeconds {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
 			"message": "时间跨度不能超过 1 个月",
@@ -65,4 +71,43 @@ func GetUserQuotaDates(c *gin.Context) {
 		"data":    dates,
 	})
 	return
+}
+
+func GetPlatformUsageSummary(c *gin.Context) {
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+
+	if startTimestamp <= 0 || endTimestamp <= 0 || endTimestamp <= startTimestamp {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "时间范围无效",
+		})
+		return
+	}
+
+	if endTimestamp-startTimestamp > maxDashboardRangeSeconds {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "时间跨度不能超过 1 个月",
+		})
+		return
+	}
+
+	onlineSince := time.Now().Unix() - onlineUserWindowMinutes*60
+	summary, err := model.GetPlatformUsageSummary(
+		startTimestamp,
+		endTimestamp,
+		onlineSince,
+	)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	summary.OnlineWindowMinute = onlineUserWindowMinutes
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data":    summary,
+	})
 }

@@ -19,9 +19,13 @@ import {
 import { useTranslation } from 'react-i18next'
 import { WORKSPACE_IDS } from '@/components/layout/lib/workspace-registry'
 import { type SidebarData } from '@/components/layout/types'
+import { ROLE } from '@/lib/roles'
+import { useAuthStore } from '@/stores/auth-store'
 
 export function useSidebarData(): SidebarData {
   const { t } = useTranslation()
+  const userRole = useAuthStore((state) => state.auth.user?.role)
+  const isAdmin = Boolean(userRole && userRole >= ROLE.ADMIN)
 
   return {
     workspaces: [
@@ -60,7 +64,7 @@ export function useSidebarData(): SidebarData {
           },
           {
             title: t('Dashboard'),
-            url: '/dashboard/models',
+            url: isAdmin ? '/dashboard/platform' : '/dashboard/models',
             icon: LayoutDashboard,
           },
           {

@@ -15,6 +15,16 @@ export interface QuotaDataItem {
   quota?: number
 }
 
+export interface PlatformUsageSummary {
+  total_count: number
+  total_quota: number
+  total_tokens: number
+  active_users: number
+  online_users: number
+  distinct_models: number
+  online_window_minutes: number
+}
+
 // ============================================================================
 // Uptime Monitoring Types
 // ============================================================================

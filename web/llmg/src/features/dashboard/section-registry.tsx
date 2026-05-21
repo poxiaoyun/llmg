@@ -12,6 +12,13 @@ const DASHBOARD_SECTIONS = [
     build: () => null,
   },
   {
+    id: 'platform',
+    titleKey: 'Platform Analytics',
+    descriptionKey: 'View platform-wide usage summary and service health',
+    adminOnly: true,
+    build: () => null,
+  },
+  {
     id: 'models',
     titleKey: 'Model Call Analytics',
     descriptionKey: 'View model call count analytics and charts',
@@ -28,7 +35,7 @@ const DASHBOARD_SECTIONS = [
 
 export type DashboardSectionId = (typeof DASHBOARD_SECTIONS)[number]['id']
 
-const ADMIN_ONLY_SECTIONS = new Set<string>(['users'])
+const ADMIN_ONLY_SECTIONS = new Set<string>(['platform', 'users'])
 
 const dashboardRegistry = createSectionRegistry<
   DashboardSectionId,
@@ -53,4 +60,8 @@ export function getDashboardSectionNavItems(
   return all.filter(
     (_, idx) => !ADMIN_ONLY_SECTIONS.has(DASHBOARD_SECTIONS[idx].id)
   )
+}
+
+export function isDashboardAdminSection(section: string): boolean {
+  return ADMIN_ONLY_SECTIONS.has(section)
 }

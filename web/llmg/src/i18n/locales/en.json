@@ -4629,6 +4629,22 @@
     "App ID is required": "App ID is required",
     "Certificate serial number is required": "Certificate serial number is required",
     "Merchant private key is required": "Merchant private key is required",
-    "API v3 key is required": "API v3 key is required"
+    "API v3 key is required": "API v3 key is required",
+    "Platform Analytics": "Platform Analytics",
+    "View platform-wide usage summary and service health": "View platform-wide usage summary and service health",
+    "Platform-wide API usage summary for administrators": "Platform-wide API usage summary for administrators",
+    "Past 24 Hours": "Past 24 Hours",
+    "Past 7 Days": "Past 7 Days",
+    "Past 1 Month": "Past 1 Month",
+    "Online Users": "Online Users",
+    "Active Users": "Active Users",
+    "Active Models": "Active Models",
+    "Users logged in within {{minutes}} minutes": "Users logged in within {{minutes}} minutes",
+    "Users with API calls in {{window}}": "Users with API calls in {{window}}",
+    "Distinct models called in {{window}}": "Distinct models called in {{window}}",
+    "Platform usage window": "Platform usage window",
+    "Compare total calls, tokens, model mix, latency, and supplier status in this window.": "Compare total calls, tokens, model mix, latency, and supplier status in this window.",
+    "Performance metrics for {{window}}": "Performance metrics for {{window}}",
+    "Requests": "Requests"
   }
 }

@@ -150,11 +150,20 @@ function PerformanceTableHeader(props: { description: string }) {
   )
 }
 
-export function PerformanceOverview() {
+interface PerformanceOverviewProps {
+  hours?: number
+  windowLabel?: string
+  windowDescription?: string
+}
+
+export function PerformanceOverview(props: PerformanceOverviewProps) {
   const { t } = useTranslation()
+  const hours = props.hours ?? PERFORMANCE_WINDOW_HOURS
+  const windowLabel = props.windowLabel ?? '24h'
+  const isDefaultWindow = hours === PERFORMANCE_WINDOW_HOURS && !props.windowLabel
   const metricsQuery = useQuery({
-    queryKey: ['perf-metrics-summary', PERFORMANCE_WINDOW_HOURS],
-    queryFn: () => getPerfMetricsSummary(PERFORMANCE_WINDOW_HOURS),
+    queryKey: ['perf-metrics-summary', hours],
+    queryFn: () => getPerfMetricsSummary(hours),
     staleTime: 60 * 1000,
     retry: false,
   })
@@ -170,7 +179,14 @@ export function PerformanceOverview() {
   const topModels = useMemo(() => models.slice(0, TOP_MODEL_LIMIT), [models])
   const loading = metricsQuery.isLoading
   const hasData = models.length > 0
-  const description = t('Performance metrics for the last 24 hours')
+  const requestLabel = isDefaultWindow
+    ? t('Requests (24h)')
+    : `${t('Requests')} (${windowLabel})`
+  const description = isDefaultWindow
+    ? t('Performance metrics for the last 24 hours')
+    : t('Performance metrics for {{window}}', {
+        window: props.windowDescription ?? windowLabel,
+      })
 
   return (
     <section className='space-y-3 sm:space-y-4'>
@@ -178,7 +194,7 @@ export function PerformanceOverview() {
         <div className='divide-border/60 grid grid-cols-2 divide-x sm:grid-cols-4'>
           <PerformanceMetricItem
             icon={Activity}
-            label={t('Requests (24h)')}
+            label={requestLabel}
             value={formatNumber(summary.totalRequests)}
             hint={t('Monitored relay requests')}
             loading={loading}
@@ -220,9 +236,7 @@ export function PerformanceOverview() {
               <TableHeader>
                 <TableRow className='hover:bg-transparent'>
                   <TableHead>{t('Model')}</TableHead>
-                  <TableHead className='text-right'>
-                    {t('Requests (24h)')}
-                  </TableHead>
+                  <TableHead className='text-right'>{requestLabel}</TableHead>
                   <TableHead className='text-right'>
                     {t('Average latency')}
                   </TableHead>

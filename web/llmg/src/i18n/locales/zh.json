@@ -4629,6 +4629,22 @@
     "App ID is required": "应用 ID 为必填项",
     "Certificate serial number is required": "证书序列号为必填项",
     "Merchant private key is required": "商户私钥为必填项",
-    "API v3 key is required": "API v3 密钥为必填项"
+    "API v3 key is required": "API v3 密钥为必填项",
+    "Platform Analytics": "平台分析",
+    "View platform-wide usage summary and service health": "查看全平台用量汇总与服务健康状态",
+    "Platform-wide API usage summary for administrators": "面向管理员的全平台 API 使用汇总",
+    "Past 24 Hours": "过去 24 小时",
+    "Past 7 Days": "过去 7 天",
+    "Past 1 Month": "过去 1 个月",
+    "Online Users": "在线用户",
+    "Active Users": "活跃用户",
+    "Active Models": "活跃模型",
+    "Users logged in within {{minutes}} minutes": "{{minutes}} 分钟内登录的用户",
+    "Users with API calls in {{window}}": "{{window}} 内有 API 调用的用户",
+    "Distinct models called in {{window}}": "{{window}} 内被调用的不同模型数",
+    "Platform usage window": "平台统计时间窗口",
+    "Compare total calls, tokens, model mix, latency, and supplier status in this window.": "在该时间窗口内对比总调用数、Token、模型分布、延迟与供应商状态。",
+    "Performance metrics for {{window}}": "{{window}} 的性能指标",
+    "Requests": "请求数"
   }
 }

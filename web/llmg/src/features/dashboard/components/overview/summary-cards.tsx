@@ -81,6 +81,7 @@ export function SummaryCards() {
       'dashboard',
       'overview',
       'summary-sparklines',
+      user?.id ?? null,
       summaryTimeRange.start_timestamp,
       summaryTimeRange.end_timestamp,
     ],
@@ -90,6 +91,7 @@ export function SummaryCards() {
         end_timestamp: summaryTimeRange.end_timestamp,
         default_time: 'hour',
       }),
+    enabled: Boolean(user?.id),
     staleTime: 60 * 1000,
   })
 
