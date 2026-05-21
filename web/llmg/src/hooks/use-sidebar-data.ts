@@ -4,6 +4,7 @@ import {
   Key,
   FileText,
   Wallet,
+  Receipt,
   Box,
   Users,
   Ticket,
@@ -91,6 +92,11 @@ export function useSidebarData(): SidebarData {
             icon: Wallet,
           },
           {
+            title: t('Orders'),
+            url: '/orders',
+            icon: Receipt,
+          },
+          {
             title: t('Profile'),
             url: '/profile',
             icon: User,
@@ -125,6 +131,11 @@ export function useSidebarData(): SidebarData {
             title: t('Subscription Management'),
             url: '/subscriptions',
             icon: CreditCard,
+          },
+          {
+            title: t('Invoice Management'),
+            url: '/invoice-management',
+            icon: Receipt,
           },
         ],
       },

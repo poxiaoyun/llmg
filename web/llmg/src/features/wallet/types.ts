@@ -248,7 +248,9 @@ export interface UserWalletData {
 /**
  * Topup record status
  */
-export type TopupStatus = 'success' | 'pending' | 'expired'
+export type TopupStatus = 'success' | 'pending' | 'failed' | 'expired'
+
+export type InvoiceRequestStatus = 'pending' | 'processing' | 'issued' | 'rejected'
 
 /**
  * Topup billing record
@@ -282,6 +284,59 @@ export interface TopupRecord {
 export interface BillingHistoryResponse {
   items: TopupRecord[]
   total: number
+}
+
+export interface InvoiceRequestRecord {
+  id: number
+  user_id: number
+  topup_id: number
+  trade_no: string
+  order_time: number
+  order_amount: number
+  company: string
+  name: string
+  region: string
+  payment_information?: string
+  email?: string
+  tax_id: string
+  billing_address: string
+  status: InvoiceRequestStatus
+  invoice_record?: string
+  invoice_file_path?: string
+  invoice_file_name?: string
+  invoice_file_content_type?: string
+  invoice_file_size?: number
+  billing_contact_snapshot?: string
+  created_at: number
+  updated_at: number
+  username?: string
+  display_name?: string
+  user_email?: string
+}
+
+export interface InvoiceLookupResponse {
+  items: InvoiceRequestRecord[]
+}
+
+export interface InvoiceListResponse {
+  items: InvoiceRequestRecord[]
+  total: number
+}
+
+export interface CreateInvoiceRequestPayload {
+  topup_id: number
+  company: string
+  name: string
+  region: string
+  payment_information: string
+  email: string
+  tax_id: string
+  billing_address: string
+}
+
+export interface UpdateInvoiceRequestPayload {
+  status: InvoiceRequestStatus
+  invoice_record: string
 }
 
 /**

@@ -1,14 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { Receipt } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { getSelf } from '@/lib/api'
 import { useSystemConfig } from '@/hooks/use-system-config'
-import { Button } from '@/components/ui/button'
 import { SectionPageLayout } from '@/components/layout'
 import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingContactCard } from './components/billing-contact-card'
-import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
@@ -40,11 +37,7 @@ import type {
   WeChatPaymentData,
 } from './types'
 
-interface WalletProps {
-  initialShowHistory?: boolean
-}
-
-export function Wallet(props: WalletProps) {
+export function Wallet() {
   const { t } = useTranslation()
   const [user, setUser] = useState<UserWalletData | null>(null)
   const [userLoading, setUserLoading] = useState(true)
@@ -54,7 +47,6 @@ export function Wallet(props: WalletProps) {
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null)
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
-  const [billingDialogOpen, setBillingDialogOpen] = useState(false)
   const [redemptionCode, setRedemptionCode] = useState('')
   const [creemDialogOpen, setCreemDialogOpen] = useState(false)
   const [selectedCreemProduct, setSelectedCreemProduct] =
@@ -112,13 +104,6 @@ export function Wallet(props: WalletProps) {
   useEffect(() => {
     fetchUser()
   }, [fetchUser])
-
-  useEffect(() => {
-    if (props.initialShowHistory) {
-      setBillingDialogOpen(true)
-      window.history.replaceState({}, '', window.location.pathname)
-    }
-  }, [props.initialShowHistory])
 
   // Initialize topup amount when topup info is loaded
   useEffect(() => {
@@ -306,16 +291,6 @@ export function Wallet(props: WalletProps) {
         <SectionPageLayout.Description>
           {t('Manage balances, payment methods, and invoice-ready account details.')}
         </SectionPageLayout.Description>
-        <SectionPageLayout.Actions>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => setBillingDialogOpen(true)}
-          >
-            <Receipt className='mr-2 h-4 w-4' />
-            {t('Order History')}
-          </Button>
-        </SectionPageLayout.Actions>
         <SectionPageLayout.Content>
           <div className='mx-auto flex w-full max-w-7xl flex-col gap-5 sm:gap-6'>
             <WalletStatsCard user={user} loading={userLoading} />
@@ -394,12 +369,6 @@ export function Wallet(props: WalletProps) {
         availableQuota={user?.aff_quota ?? 0}
         transferring={transferring}
       />
-
-      <BillingHistoryDialog
-        open={billingDialogOpen}
-        onOpenChange={setBillingDialogOpen}
-      />
-
       <CreemConfirmDialog
         open={creemDialogOpen}
         onOpenChange={setCreemDialogOpen}

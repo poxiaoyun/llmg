@@ -1,3 +1,5 @@
+import axios from 'axios'
+import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import type {
   RedemptionRequest,
@@ -15,6 +17,11 @@ import type {
   AffiliateCodeResponse,
   AffiliateTransferResponse,
   BillingHistoryResponse,
+  InvoiceLookupResponse,
+  InvoiceListResponse,
+  InvoiceRequestRecord,
+  CreateInvoiceRequestPayload,
+  UpdateInvoiceRequestPayload,
   CompleteOrderRequest,
   CreemPaymentRequest,
   CreemPaymentResponse,
@@ -240,4 +247,178 @@ export async function completeOrder(
 ): Promise<ApiResponse> {
   const res = await api.post('/api/user/topup/complete', request)
   return res.data
+}
+
+export async function lookupInvoiceRequests(
+  topupIds: number[]
+): Promise<ApiResponse<InvoiceLookupResponse>> {
+  const res = await api.post('/api/user/invoice/lookup', {
+    topup_ids: topupIds,
+  })
+  return res.data
+}
+
+export async function createInvoiceRequest(
+  request: CreateInvoiceRequestPayload
+): Promise<ApiResponse<InvoiceRequestRecord>> {
+  const res = await api.post('/api/user/invoice', request)
+  return res.data
+}
+
+export async function getAllInvoiceRequests(
+  page: number,
+  pageSize: number,
+  keyword?: string
+): Promise<ApiResponse<InvoiceListResponse>> {
+  const params = new URLSearchParams({
+    p: page.toString(),
+    page_size: pageSize.toString(),
+  })
+  if (keyword) {
+    params.append('keyword', keyword)
+  }
+  const res = await api.get(`/api/user/invoice/requests?${params.toString()}`)
+  return res.data
+}
+
+export async function updateInvoiceRequest(
+  id: number,
+  request: UpdateInvoiceRequestPayload
+): Promise<ApiResponse> {
+  const res = await api.put(`/api/user/invoice/requests/${id}`, request)
+  return res.data
+}
+
+export async function uploadInvoiceRequestFile(
+  id: number,
+  file: File
+): Promise<ApiResponse<InvoiceRequestRecord>> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await api.post(`/api/user/invoice/requests/${id}/file`, formData)
+  return res.data
+}
+
+type InvoiceFileScope = 'user' | 'admin'
+
+function getInvoiceFilePath(id: number, scope: InvoiceFileScope): string {
+  if (scope === 'admin') {
+    return `/api/user/invoice/requests/${id}/file`
+  }
+  return `/api/user/invoice/files/${id}`
+}
+
+function getDownloadFilename(
+  contentDisposition?: string,
+  fallback = 'invoice-file'
+): string {
+  if (!contentDisposition) {
+    return fallback
+  }
+
+  const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)
+  if (utf8Match?.[1]) {
+    return decodeURIComponent(utf8Match[1])
+  }
+
+  const plainMatch = contentDisposition.match(/filename="?([^";]+)"?/i)
+  if (plainMatch?.[1]) {
+    return plainMatch[1]
+  }
+
+  return fallback
+}
+
+async function extractBlobErrorMessage(data: unknown): Promise<string | null> {
+  if (!(data instanceof Blob)) {
+    return null
+  }
+
+  const text = (await data.text()).trim()
+  if (!text) {
+    return null
+  }
+
+  try {
+    const parsed = JSON.parse(text) as { message?: string; error?: { message?: string } }
+    return parsed.error?.message || parsed.message || text
+  } catch {
+    return text
+  }
+}
+
+async function fetchInvoiceFileBlob(
+  id: number,
+  scope: InvoiceFileScope,
+  fallbackName?: string
+): Promise<{ blob: Blob; fileName: string }> {
+  try {
+    const res = await api.get(getInvoiceFilePath(id, scope), {
+      responseType: 'blob',
+      skipBusinessError: true,
+      skipErrorHandler: true,
+      disableDuplicate: true,
+    } as Record<string, unknown>)
+
+    return {
+      blob: res.data as Blob,
+      fileName: getDownloadFilename(
+        (res.headers as Record<string, string | undefined>)['content-disposition'],
+        fallbackName || 'invoice-file'
+      ),
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message =
+        (await extractBlobErrorMessage(error.response?.data)) ||
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to download invoice'
+      toast.error(message)
+    } else {
+      toast.error('Failed to download invoice')
+    }
+    throw error
+  }
+}
+
+export async function downloadInvoiceFile(
+  id: number,
+  scope: InvoiceFileScope,
+  fallbackName?: string
+): Promise<void> {
+  const { blob, fileName } = await fetchInvoiceFileBlob(id, scope, fallbackName)
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = fileName
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+export async function previewInvoiceFile(
+  id: number,
+  scope: InvoiceFileScope,
+  fallbackName?: string
+): Promise<void> {
+  const previewWindow = window.open('about:blank', '_blank')
+  if (previewWindow) {
+    previewWindow.opener = null
+  }
+
+  try {
+    const { blob } = await fetchInvoiceFileBlob(id, scope, fallbackName)
+    const url = URL.createObjectURL(blob)
+
+    if (previewWindow) {
+      previewWindow.location.replace(url)
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer')
+    }
+
+    setTimeout(() => URL.revokeObjectURL(url), 60_000)
+  } catch (error) {
+    previewWindow?.close()
+    throw error
+  }
 }
