@@ -23,6 +23,7 @@ import {
   ApiKeyCell,
   ModelLimitsCell,
   IpRestrictionsCell,
+  RateLimitsCell,
 } from './api-keys-cells'
 import { DataTableRowActions } from './data-table-row-actions'
 
@@ -243,6 +244,15 @@ export function useApiKeysColumns(): ColumnDef<ApiKey>[] {
         return <GroupBadge group={group} ratio={ratio} />
       },
       meta: { label: t('Group'), mobileHidden: true },
+    },
+    {
+      id: 'rate_limits',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={t('Rate limits')} />
+      ),
+      cell: ({ row }) => <RateLimitsCell apiKey={row.original} />,
+      enableSorting: false,
+      meta: { label: t('Rate limits'), mobileHidden: true },
     },
     {
       id: 'model_limits',

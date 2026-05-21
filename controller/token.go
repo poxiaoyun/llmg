@@ -14,6 +14,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func validateTokenRateLimits(token *model.Token) error {
+	if token == nil {
+		return nil
+	}
+	if token.RPMLimit < 0 {
+		return fmt.Errorf("RPM limit cannot be negative")
+	}
+	if token.TPMLimit < 0 {
+		return fmt.Errorf("TPM limit cannot be negative")
+	}
+	return nil
+}
+
 func buildMaskedTokenResponse(token *model.Token) *model.Token {
 	if token == nil {
 		return nil
@@ -157,6 +170,8 @@ func GetTokenUsage(c *gin.Context) {
 			"total_used":           token.UsedQuota,
 			"total_available":      token.RemainQuota,
 			"unlimited_quota":      token.UnlimitedQuota,
+			"rpm_limit":            token.RPMLimit,
+			"tpm_limit":            token.TPMLimit,
 			"model_limits":         token.GetModelLimitsMap(),
 			"model_limits_enabled": token.ModelLimitsEnabled,
 			"expires_at":           expiredAt,
@@ -168,6 +183,10 @@ func AddToken(c *gin.Context) {
 	token := model.Token{}
 	err := c.ShouldBindJSON(&token)
 	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if err = validateTokenRateLimits(&token); err != nil {
 		common.ApiError(c, err)
 		return
 	}
@@ -220,6 +239,8 @@ func AddToken(c *gin.Context) {
 		ModelLimits:        token.ModelLimits,
 		AllowIps:           token.AllowIps,
 		Group:              token.Group,
+		RPMLimit:           token.RPMLimit,
+		TPMLimit:           token.TPMLimit,
 		CrossGroupRetry:    token.CrossGroupRetry,
 	}
 	err = cleanToken.Insert()
@@ -253,6 +274,10 @@ func UpdateToken(c *gin.Context) {
 	token := model.Token{}
 	err := c.ShouldBindJSON(&token)
 	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if err = validateTokenRateLimits(&token); err != nil {
 		common.ApiError(c, err)
 		return
 	}
@@ -298,6 +323,8 @@ func UpdateToken(c *gin.Context) {
 		cleanToken.ModelLimits = token.ModelLimits
 		cleanToken.AllowIps = token.AllowIps
 		cleanToken.Group = token.Group
+		cleanToken.RPMLimit = token.RPMLimit
+		cleanToken.TPMLimit = token.TPMLimit
 		cleanToken.CrossGroupRetry = token.CrossGroupRetry
 	}
 	err = cleanToken.Update()

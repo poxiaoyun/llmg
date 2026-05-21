@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useForm, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -107,6 +107,7 @@ export function ApiKeysMutateDrawer({
   const { status } = useStatus()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const formRef = useRef<HTMLFormElement | null>(null)
   const defaultUseAutoGroup = status?.default_use_auto_group === true
 
   // Fetch models
@@ -218,6 +219,39 @@ export function ApiKeysMutateDrawer({
     }
   }
 
+  const getFirstErrorMessage = (
+    errors: FieldErrors<ApiKeyFormValues>
+  ): string | undefined => {
+    for (const value of Object.values(errors)) {
+      if (!value) continue
+
+      if (
+        typeof value === 'object' &&
+        'message' in value &&
+        typeof value.message === 'string'
+      ) {
+        return value.message
+      }
+
+      if (typeof value === 'object') {
+        const nestedMessage = getFirstErrorMessage(
+          value as FieldErrors<ApiKeyFormValues>
+        )
+        if (nestedMessage) {
+          return nestedMessage
+        }
+      }
+    }
+
+    return undefined
+  }
+
+  const handleInvalidSubmit = (errors: FieldErrors<ApiKeyFormValues>) => {
+    toast.error(
+      getFirstErrorMessage(errors) || t('Please check the form fields')
+    )
+  }
+
   const handleSetExpiry = (months: number, days: number, hours: number) => {
     if (months === 0 && days === 0 && hours === 0) {
       form.setValue('expired_time', undefined)
@@ -272,7 +306,8 @@ export function ApiKeysMutateDrawer({
         <Form {...form}>
           <form
             id='api-key-form'
-            onSubmit={form.handleSubmit(onSubmit)}
+            ref={formRef}
+            onSubmit={form.handleSubmit(onSubmit, handleInvalidSubmit)}
             className='min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3 sm:space-y-4 sm:px-4 sm:py-4'
           >
             <ApiKeyFormSection
@@ -548,6 +583,66 @@ export function ApiKeysMutateDrawer({
 
                     <FormField
                       control={form.control}
+                      name='rpm_limit'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('RPM')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type='number'
+                              min='0'
+                              step='1'
+                              placeholder='0'
+                              onChange={(e) =>
+                                field.onChange(
+                                  Math.max(0, parseInt(e.target.value, 10) || 0)
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {t(
+                              'Rolling 60-second request limit for this key. Set 0 to disable.'
+                            )}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name='tpm_limit'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('TPM')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type='number'
+                              min='0'
+                              step='1'
+                              placeholder='0'
+                              onChange={(e) =>
+                                field.onChange(
+                                  Math.max(0, parseInt(e.target.value, 10) || 0)
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {t(
+                              'Rolling 60-second token limit for this key, estimated from prompt tokens plus max_tokens. Set 0 to disable.'
+                            )}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
                       name='allow_ips'
                       render={({ field }) => (
                         <FormItem>
@@ -586,9 +681,11 @@ export function ApiKeysMutateDrawer({
             {t('Close')}
           </SheetClose>
           <Button
-            form='api-key-form'
-            type='submit'
+            type='button'
             disabled={isSubmitting}
+            onClick={() => {
+              formRef.current?.requestSubmit()
+            }}
             className='w-full sm:w-auto'
           >
             {isSubmitting ? t('Saving...') : t('Save changes')}

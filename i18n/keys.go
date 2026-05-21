@@ -232,6 +232,7 @@ const (
 const (
 	MsgRateLimitReached      = "rate_limit.reached"
 	MsgRateLimitTotalReached = "rate_limit.total_reached"
+	MsgRateLimitTokensReached = "rate_limit.tokens_reached"
 )
 
 // Setting related messages

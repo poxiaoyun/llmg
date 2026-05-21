@@ -195,3 +195,26 @@ export function IpRestrictionsCell({ apiKey }: { apiKey: ApiKey }) {
     </Tooltip>
   )
 }
+
+export function RateLimitsCell({ apiKey }: { apiKey: ApiKey }) {
+  const { t } = useTranslation()
+  const rpmLimit = apiKey.rpm_limit || 0
+  const tpmLimit = apiKey.tpm_limit || 0
+
+  if (rpmLimit <= 0 && tpmLimit <= 0) {
+    return (
+      <StatusBadge
+        label={t('No restriction')}
+        variant='neutral'
+        copyable={false}
+      />
+    )
+  }
+
+  return (
+    <div className='space-y-0.5 text-xs'>
+      {rpmLimit > 0 && <div className='font-mono'>RPM {rpmLimit}</div>}
+      {tpmLimit > 0 && <div className='font-mono'>TPM {tpmLimit}</div>}
+    </div>
+  )
+}

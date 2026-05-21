@@ -149,6 +149,10 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 	}
 
 	relayInfo.SetEstimatePromptTokens(tokens)
+	newAPIError = service.EnforceTokenRateLimit(c, tokens, meta)
+	if newAPIError != nil {
+		return
+	}
 
 	priceData, err := helper.ModelPriceHelper(c, relayInfo, tokens, meta)
 	if err != nil {
