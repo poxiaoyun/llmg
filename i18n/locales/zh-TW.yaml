@@ -212,6 +212,12 @@ setting.gotify_url_invalid: "無效的Gotify伺服器位址"
 setting.url_must_http: "URL必須以http://或https://開頭"
 setting.saved: "設定已更新"
 
+# Email messages
+email.verification_subject: "{{.SystemName}} 信箱驗證郵件"
+email.verification_body: "<p>您好，您正在進行 {{.SystemName}} 信箱驗證。</p><p>您的驗證碼為：<strong>{{.Code}}</strong></p><p>驗證碼 {{.Minutes}} 分鐘內有效，如果不是本人操作，請忽略此郵件。</p>"
+email.password_reset_subject: "{{.SystemName}} 密碼重設"
+email.password_reset_body: "<p>您好，您正在進行 {{.SystemName}} 密碼重設。</p><p>點擊 <a href='{{.Link}}'>此處</a> 進行密碼重設。</p><p>如果連結無法點擊，請將下面的連結複製到瀏覽器中開啟：<br>{{.Link}}</p><p>重設連結 {{.Minutes}} 分鐘內有效，如果不是本人操作，請忽略此郵件。</p>"
+
 # Deployment messages (io.net)
 deployment.not_enabled: "io.net 模型部署功能未啟用或 API 密鑰缺失"
 deployment.id_required: "deployment ID 為必填項"

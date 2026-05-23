@@ -211,6 +211,12 @@ setting.gotify_url_invalid: "Invalid Gotify server URL"
 setting.url_must_http: "URL must start with http:// or https://"
 setting.saved: "Settings updated"
 
+# Email messages
+email.verification_subject: "{{.SystemName}} email verification"
+email.verification_body: "<p>Hello, you are verifying your email for {{.SystemName}}.</p><p>Your verification code is: <strong>{{.Code}}</strong></p><p>The code is valid for {{.Minutes}} minutes. If this was not you, please ignore this email.</p>"
+email.password_reset_subject: "{{.SystemName}} password reset"
+email.password_reset_body: "<p>Hello, you requested a password reset for {{.SystemName}}.</p><p>Click <a href='{{.Link}}'>here</a> to reset your password.</p><p>If the link does not open, copy and paste this URL into your browser:<br>{{.Link}}</p><p>The reset link is valid for {{.Minutes}} minutes. If this was not you, please ignore this email.</p>"
+
 # Deployment messages (io.net)
 deployment.not_enabled: "io.net model deployment is not enabled or API key is missing"
 deployment.id_required: "Deployment ID is required"

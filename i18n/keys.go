@@ -250,6 +250,14 @@ const (
 	MsgSettingSaved            = "setting.saved"
 )
 
+// Email related messages
+const (
+	MsgEmailVerificationSubject = "email.verification_subject"
+	MsgEmailVerificationBody    = "email.verification_body"
+	MsgPasswordResetSubject     = "email.password_reset_subject"
+	MsgPasswordResetBody        = "email.password_reset_body"
+)
+
 // Deployment related messages (io.net)
 const (
 	MsgDeploymentNotEnabled     = "deployment.not_enabled"

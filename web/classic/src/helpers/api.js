@@ -24,7 +24,21 @@ import {
   isValidMessage,
 } from './utils';
 import axios from 'axios';
+import i18n from '../i18n/i18n';
 import { MESSAGE_ROLES } from '../constants/playground.constants';
+
+function getPreferredLanguage() {
+  if (i18n.resolvedLanguage) {
+    return i18n.resolvedLanguage;
+  }
+  if (i18n.language) {
+    return i18n.language;
+  }
+  if (typeof navigator !== 'undefined' && navigator.language) {
+    return navigator.language;
+  }
+  return 'en';
+}
 
 export let API = axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_SERVER_URL
@@ -32,6 +46,7 @@ export let API = axios.create({
     : '',
   headers: {
     'New-API-User': getUserIdFromLocalStorage(),
+    'Accept-Language': getPreferredLanguage(),
     'Cache-Control': 'no-store',
   },
 });
@@ -87,12 +102,18 @@ export function updateAPI() {
       : '',
     headers: {
       'New-API-User': getUserIdFromLocalStorage(),
+      'Accept-Language': getPreferredLanguage(),
       'Cache-Control': 'no-store',
     },
   });
 
   patchAPIInstance(API);
 }
+
+API.interceptors.request.use((config) => {
+  config.headers['Accept-Language'] = getPreferredLanguage();
+  return config;
+});
 
 API.interceptors.response.use(
   (response) => response,

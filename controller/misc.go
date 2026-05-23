@@ -8,6 +8,7 @@ import (
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/constant"
+	"github.com/QuantumNous/new-api/i18n"
 	"github.com/QuantumNous/new-api/logger"
 	"github.com/QuantumNous/new-api/middleware"
 	"github.com/QuantumNous/new-api/model"
@@ -233,7 +234,7 @@ func SendEmailVerification(c *gin.Context) {
 	if err := common.Validate.Var(email, "required,email"); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "无效的参数",
+			"message": i18n.T(c, i18n.MsgInvalidParams),
 		})
 		return
 	}
@@ -241,7 +242,7 @@ func SendEmailVerification(c *gin.Context) {
 	if len(parts) != 2 {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "无效的邮箱地址",
+			"message": i18n.T(c, i18n.MsgSettingEmailInvalid),
 		})
 		return
 	}
@@ -283,10 +284,15 @@ func SendEmailVerification(c *gin.Context) {
 	}
 	code := common.GenerateVerificationCode(6)
 	common.RegisterVerificationCodeWithKey(email, code, common.EmailVerificationPurpose)
-	subject := fmt.Sprintf("%s邮箱验证邮件", common.SystemName)
-	content := fmt.Sprintf("<p>您好，你正在进行%s邮箱验证。</p>"+
-		"<p>您的验证码为: <strong>%s</strong></p>"+
-		"<p>验证码 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, code, common.VerificationValidMinutes)
+	templateData := map[string]any{
+		"SystemName": common.SystemName,
+		"Code":       code,
+		"Minutes":    common.VerificationValidMinutes,
+	}
+	subject := i18n.T(c, i18n.MsgEmailVerificationSubject, map[string]any{
+		"SystemName": common.SystemName,
+	})
+	content := i18n.T(c, i18n.MsgEmailVerificationBody, templateData)
 	err := common.SendEmail(subject, email, content)
 	if err != nil {
 		common.ApiError(c, err)
@@ -304,7 +310,7 @@ func SendPasswordResetEmail(c *gin.Context) {
 	if err := common.Validate.Var(email, "required,email"); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "无效的参数",
+			"message": i18n.T(c, i18n.MsgInvalidParams),
 		})
 		return
 	}
@@ -312,11 +318,15 @@ func SendPasswordResetEmail(c *gin.Context) {
 		code := common.GenerateVerificationCode(0)
 		common.RegisterVerificationCodeWithKey(email, code, common.PasswordResetPurpose)
 		link := fmt.Sprintf("%s/user/reset?email=%s&token=%s", system_setting.ServerAddress, email, code)
-		subject := fmt.Sprintf("%s密码重置", common.SystemName)
-		content := fmt.Sprintf("<p>您好，你正在进行%s密码重置。</p>"+
-			"<p>点击 <a href='%s'>此处</a> 进行密码重置。</p>"+
-			"<p>如果链接无法点击，请尝试点击下面的链接或将其复制到浏览器中打开：<br> %s </p>"+
-			"<p>重置链接 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, link, link, common.VerificationValidMinutes)
+		templateData := map[string]any{
+			"SystemName": common.SystemName,
+			"Link":       link,
+			"Minutes":    common.VerificationValidMinutes,
+		}
+		subject := i18n.T(c, i18n.MsgPasswordResetSubject, map[string]any{
+			"SystemName": common.SystemName,
+		})
+		content := i18n.T(c, i18n.MsgPasswordResetBody, templateData)
 		err := common.SendEmail(subject, email, content)
 		if err != nil {
 			logger.LogError(c.Request.Context(), fmt.Sprintf("failed to send password reset email to %s: %s", email, err.Error()))

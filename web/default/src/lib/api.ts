@@ -114,12 +114,26 @@ function getUserId(): string | null {
   return null
 }
 
+function getPreferredLanguage(): string {
+  if (i18next.resolvedLanguage) {
+    return i18next.resolvedLanguage
+  }
+  if (i18next.language) {
+    return i18next.language
+  }
+  if (typeof navigator !== 'undefined' && navigator.language) {
+    return navigator.language
+  }
+  return 'en'
+}
+
 /**
  * Get common request headers (for both axios and SSE requests)
  */
 export function getCommonHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'Accept-Language': getPreferredLanguage(),
   }
 
   const uid = getUserId()
@@ -137,6 +151,8 @@ export function getCommonHeaders(): Record<string, string> {
 // Attach user ID header for all requests
 api.interceptors.request.use((config) => {
   const uid = getUserId()
+  ;(config.headers as Record<string, string>)['Accept-Language'] =
+    getPreferredLanguage()
   if (uid) {
     // Custom header for user identification
     ;(config.headers as Record<string, string>)['New-Api-User'] = uid
