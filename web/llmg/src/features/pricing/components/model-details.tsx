@@ -46,7 +46,6 @@ import { inferModelMetadata } from '../lib/model-metadata'
 import { formatFixedPrice, formatGroupPrice } from '../lib/price'
 import type {
   Modality,
-  ModelCapability,
   PriceType,
   PricingModel,
   TokenUnit,
@@ -66,46 +65,6 @@ function SectionTitle(props: { children: React.ReactNode }) {
     <h2 className='text-muted-foreground mb-3 text-xs font-semibold tracking-wider uppercase'>
       {props.children}
     </h2>
-  )
-}
-
-const CAPABILITY_LABEL_KEYS: Record<ModelCapability, string> = {
-  function_calling: 'Function calling',
-  streaming: 'Streaming',
-  vision: 'Vision',
-  json_mode: 'JSON mode',
-  structured_output: 'Structured output',
-  reasoning: 'Reasoning',
-  tools: 'Tools',
-  system_prompt: 'System prompt',
-  web_search: 'Web search',
-  code_interpreter: 'Code interpreter',
-  caching: 'Prompt caching',
-  embeddings: 'Embeddings',
-}
-
-function CompactCapabilityList(props: { capabilities: ModelCapability[] }) {
-  const { t } = useTranslation()
-
-  if (props.capabilities.length === 0) {
-    return (
-      <span className='text-muted-foreground text-xs'>
-        {t('No capabilities reported for this model.')}
-      </span>
-    )
-  }
-
-  return (
-    <div className='flex flex-wrap gap-1.5'>
-      {props.capabilities.map((capability) => (
-        <span
-          key={capability}
-          className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-xs font-medium'
-        >
-          {t(CAPABILITY_LABEL_KEYS[capability] ?? capability)}
-        </span>
-      ))}
-    </div>
   )
 }
 
@@ -131,7 +90,6 @@ function CompactModalities(props: { input: Modality[]; output: Modality[] }) {
 }
 
 function ModelSignalsSection(props: {
-  capabilities: ModelCapability[]
   input: Modality[]
   output: Modality[]
 }) {
@@ -139,11 +97,8 @@ function ModelSignalsSection(props: {
 
   return (
     <section>
-      <SectionTitle>
-        {t('Capabilities')} / {t('Supported modalities')}
-      </SectionTitle>
-      <div className='grid gap-3 rounded-xl border p-3 @2xl/details:grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)]'>
-        <CompactCapabilityList capabilities={props.capabilities} />
+      <SectionTitle>{t('Supported modalities')}</SectionTitle>
+      <div className='rounded-xl border p-3'>
         <CompactModalities input={props.input} output={props.output} />
       </div>
     </section>
@@ -948,7 +903,6 @@ export function ModelDetailsContent(props: ModelDetailsContentProps) {
           <ModelDetailsQuickStats metadata={metadata} />
 
           <ModelSignalsSection
-            capabilities={metadata.capabilities}
             input={metadata.input_modalities}
             output={metadata.output_modalities}
           />

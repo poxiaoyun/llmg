@@ -14,28 +14,13 @@ import {
   formatRequestPrice,
   stripTrailingZeros,
 } from '../lib/price'
-import type { ModelCapability, PricingModel, TokenUnit } from '../types'
+import type { PricingModel, TokenUnit } from '../types'
 
 export interface PricingColumnsOptions {
   tokenUnit?: TokenUnit
   priceRate?: number
   usdExchangeRate?: number
   showRechargePrice?: boolean
-}
-
-const CAPABILITY_LABEL_KEYS: Record<ModelCapability, string> = {
-  function_calling: 'Function calling',
-  streaming: 'Streaming',
-  vision: 'Vision',
-  json_mode: 'JSON mode',
-  structured_output: 'Structured output',
-  reasoning: 'Reasoning',
-  tools: 'Tools',
-  system_prompt: 'System prompt',
-  web_search: 'Web search',
-  code_interpreter: 'Code interpreter',
-  caching: 'Prompt caching',
-  embeddings: 'Embeddings',
 }
 
 function formatContextLength(value?: number): string {
@@ -67,37 +52,40 @@ function renderPriceCell(value: string, suffix: string) {
   )
 }
 
-function renderCapabilitiesCell(
-  capabilities: ModelCapability[],
-  t: (key: string) => string
+function renderTieredPriceCell(
+  items: Array<{ label?: string; value: string }>,
+  suffix: string
 ) {
-  if (capabilities.length === 0) {
+  if (items.length === 0) {
     return renderUnavailableCell()
   }
 
-  const visibleCapabilities = capabilities.slice(0, 3)
-  const remaining = capabilities.length - visibleCapabilities.length
+  if (items.length === 1 && !items[0].label) {
+    return renderPriceCell(items[0].value, suffix)
+  }
 
   return (
-    <div className='flex max-w-[280px] flex-wrap gap-1'>
-      {visibleCapabilities.map((capability) => (
-        <span
-          key={capability}
-          className='bg-muted text-foreground rounded-md px-2 py-0.5 text-xs'
-        >
-          {t(CAPABILITY_LABEL_KEYS[capability] ?? capability)}
-        </span>
+    <div className='space-y-1'>
+      {items.map((item) => (
+        <div key={`${item.label || 'price'}-${item.value}`} className='flex items-baseline gap-2'>
+          {item.label ? (
+            <span className='text-muted-foreground/70 min-w-6 text-[11px] font-medium uppercase'>
+              {item.label}
+            </span>
+          ) : null}
+          <span className='font-mono text-sm tabular-nums'>
+            {item.value}
+            <span className='text-muted-foreground/70'>/ {suffix}</span>
+          </span>
+        </div>
       ))}
-      {remaining > 0 && (
-        <span className='text-muted-foreground px-1 text-xs'>+{remaining}</span>
-      )}
     </div>
   )
 }
 
 function getPriceValue(args: {
   model: PricingModel
-  type: 'input' | 'output' | 'cache'
+  type: 'input' | 'output' | 'cache_read' | 'cache_write'
   tokenUnit: TokenUnit
   tokenUnitLabel: string
   requestLabel: string
@@ -129,14 +117,32 @@ function getPriceValue(args: {
       return renderUnavailableCell('Expr')
     }
 
+    if (type === 'cache_write') {
+      const writeEntries = dynamicSummary.entries.filter(
+        (item) =>
+          item.field === 'cacheCreatePrice' || item.field === 'cacheCreate1hPrice'
+      )
+
+      return renderTieredPriceCell(
+        writeEntries.map((item) => ({
+          label:
+            writeEntries.length > 1
+              ? item.field === 'cacheCreate1hPrice'
+                ? '1h'
+                : '5m'
+              : undefined,
+          value: stripTrailingZeros(item.formatted),
+        })),
+        `${tokenUnitLabel} tokens`
+      )
+    }
+
     const fieldMap = {
       input: 'inputPrice',
       output: 'outputPrice',
-      cache: 'cacheReadPrice',
+      cache_read: 'cacheReadPrice',
     } as const
-    const entry = dynamicSummary.entries.find(
-      (item) => item.field === fieldMap[type]
-    )
+    const entry = dynamicSummary.entries.find((item) => item.field === fieldMap[type])
 
     if (!entry) {
       return renderUnavailableCell()
@@ -164,8 +170,50 @@ function getPriceValue(args: {
     return renderPriceCell(requestPrice, requestLabel)
   }
 
-  if (type === 'cache' && model.cache_ratio == null) {
-    return renderUnavailableCell()
+  if (type === 'cache_read') {
+    if (model.cache_ratio == null) {
+      return renderUnavailableCell()
+    }
+
+    const price = stripTrailingZeros(
+      formatPrice(
+        model,
+        'cache',
+        tokenUnit,
+        showRechargePrice,
+        priceRate,
+        usdExchangeRate
+      )
+    )
+
+    if (price === '-' || price.toLowerCase() === 'nan') {
+      return renderUnavailableCell()
+    }
+
+    return renderPriceCell(price, `${tokenUnitLabel} tokens`)
+  }
+
+  if (type === 'cache_write') {
+    if (model.create_cache_ratio == null) {
+      return renderUnavailableCell()
+    }
+
+    const price = stripTrailingZeros(
+      formatPrice(
+        model,
+        'create_cache',
+        tokenUnit,
+        showRechargePrice,
+        priceRate,
+        usdExchangeRate
+      )
+    )
+
+    if (price === '-' || price.toLowerCase() === 'nan') {
+      return renderUnavailableCell()
+    }
+
+    return renderPriceCell(price, `${tokenUnitLabel} tokens`)
   }
 
   const price = stripTrailingZeros(
@@ -287,13 +335,13 @@ export function usePricingColumns(
       enableSorting: false,
     },
     {
-      id: 'cache_price',
-      meta: { label: t('Cache price') },
-      header: t('Cache price'),
+      id: 'cache_read_price',
+      meta: { label: t('Cache read price') },
+      header: t('Cache read price'),
       cell: ({ row }) =>
         getPriceValue({
           model: row.original,
-          type: 'cache',
+          type: 'cache_read',
           tokenUnit,
           tokenUnitLabel,
           requestLabel,
@@ -305,14 +353,21 @@ export function usePricingColumns(
       enableSorting: false,
     },
     {
-      id: 'capabilities',
-      meta: { label: t('Capabilities') },
-      header: t('Capabilities'),
-      cell: ({ row }) => {
-        const metadata = inferModelMetadata(row.original)
-        return renderCapabilitiesCell(metadata.capabilities, t)
-      },
-      size: 260,
+      id: 'cache_write_price',
+      meta: { label: t('Cache write price') },
+      header: t('Cache write price'),
+      cell: ({ row }) =>
+        getPriceValue({
+          model: row.original,
+          type: 'cache_write',
+          tokenUnit,
+          tokenUnitLabel,
+          requestLabel,
+          showRechargePrice,
+          priceRate,
+          usdExchangeRate,
+        }),
+      size: 190,
       enableSorting: false,
     },
   ]
