@@ -210,16 +210,16 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
   return (
     <div
       className={cn(
-        'prose prose-sm max-w-none dark:prose-invert',
+        'prose prose-base max-w-none dark:prose-invert',
         'prose-headings:font-semibold prose-headings:tracking-tight',
-        'prose-h1:text-3xl prose-h2:border-b prose-h2:border-border/60 prose-h2:pb-3 prose-h2:text-xl prose-h3:text-lg',
-        'prose-p:my-3 prose-p:leading-relaxed prose-p:text-muted-foreground',
-        'prose-li:my-1.5 prose-li:text-muted-foreground prose-li:marker:text-primary/65',
+        'prose-h1:mb-6 prose-h1:text-3xl prose-h2:mt-12 prose-h2:mb-5 prose-h2:border-b prose-h2:border-border/60 prose-h2:pb-3 prose-h2:text-xl prose-h3:mt-9 prose-h3:mb-4 prose-h3:text-lg',
+        'prose-p:my-4 prose-p:leading-8 prose-p:text-muted-foreground',
+        'prose-li:my-2 prose-li:leading-8 prose-li:text-muted-foreground prose-li:marker:text-primary/65',
         'prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
         'prose-strong:text-foreground',
         'prose-img:rounded-lg prose-img:border prose-img:shadow-sm',
         'prose-hr:border-border/60',
-        'prose-ul:my-3 prose-ol:my-3',
+        'prose-ul:my-5 prose-ol:my-5',
         '[&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
         '[overflow-wrap:anywhere] break-words',
         className

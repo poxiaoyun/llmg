@@ -47,7 +47,7 @@ This project also supports Gemini-style model list requests. Those usually pass 
 ## `chat/completions` example
 
 ```bash
-curl https://your-llmg-domain.com/v1/chat/completions \
+curl https://llmg.oneclaw.me/v1/chat/completions \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -60,7 +60,7 @@ curl https://your-llmg-domain.com/v1/chat/completions \
 ## `messages` example
 
 ```bash
-curl https://your-llmg-domain.com/v1/messages \
+curl https://llmg.oneclaw.me/v1/messages \
   -H "x-api-key: YOUR_LLMG_API_KEY" \
   -H "anthropic-version: 2023-06-01" \
   -H "Content-Type: application/json" \
@@ -82,7 +82,7 @@ curl https://your-llmg-domain.com/v1/messages \
 Use this call to fetch the live model catalog in code:
 
 ```bash
-curl https://your-llmg-domain.com/v1/models \
+curl https://llmg.oneclaw.me/v1/models \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY"
 ```
 

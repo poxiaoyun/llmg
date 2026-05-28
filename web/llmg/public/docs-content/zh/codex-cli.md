@@ -36,7 +36,7 @@ model_reasoning_effort = "high"
 
 [model_providers.llmg]
 name = "LLMG"
-base_url = "https://your-llmg-domain.com/v1"
+base_url = "https://llmg.oneclaw.me/v1"
 env_key = "LLMG_API_KEY"
 ```
 

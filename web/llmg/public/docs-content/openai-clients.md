@@ -13,7 +13,7 @@
 生产环境通常写成：
 
 ```text
-https://your-llmg-domain.com/v1
+https://llmg.oneclaw.me/v1
 ```
 
 本地开发默认可以是：
@@ -37,7 +37,7 @@ import OpenAI from 'openai'
 
 const client = new OpenAI({
   apiKey: process.env.LLMG_API_KEY,
-  baseURL: 'https://your-llmg-domain.com/v1',
+  baseURL: 'https://llmg.oneclaw.me/v1',
 })
 
 const completion = await client.chat.completions.create({
@@ -55,7 +55,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key="YOUR_LLMG_API_KEY",
-    base_url="https://your-llmg-domain.com/v1",
+    base_url="https://llmg.oneclaw.me/v1",
 )
 
 response = client.chat.completions.create(
@@ -69,7 +69,7 @@ print(response.choices[0].message.content)
 ## 直接 HTTP / cURL
 
 ```bash
-curl https://your-llmg-domain.com/v1/chat/completions \
+curl https://llmg.oneclaw.me/v1/chat/completions \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -84,7 +84,7 @@ curl https://your-llmg-domain.com/v1/chat/completions \
 
 | 应用字段 | 填写内容 |
 | --- | --- |
-| Base URL / Endpoint | `https://your-llmg-domain.com/v1` |
+| Base URL / Endpoint | `https://llmg.oneclaw.me/v1` |
 | API Key | LLMG 中创建的 key |
 | Model | 当前实例实际可用的模型 ID |
 

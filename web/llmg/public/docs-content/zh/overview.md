@@ -22,7 +22,7 @@ LLMG 是一个统一的模型网关入口。对接入方来说，真正需要确
 所有 OpenAI 兼容示例都会使用同一个网关入口：
 
 ```text
-https://your-llmg-domain.com/v1
+https://llmg.oneclaw.me/v1
 ```
 
 本地开发常见默认值：

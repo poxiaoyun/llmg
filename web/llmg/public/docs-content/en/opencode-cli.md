@@ -30,7 +30,7 @@ If you prefer keeping the key in your shell, export the usual OpenAI-compatible 
 
 ```bash
 export OPENAI_API_KEY="your_api_key"
-export OPENAI_BASE_URL="https://your-llmg-domain.com/v1"
+export OPENAI_BASE_URL="https://llmg.oneclaw.me/v1"
 ```
 
 ## 3. Create `opencode.jsonc`
@@ -62,7 +62,7 @@ Replace the model list with the models your own instance exposes:
         }
       },
       "options": {
-        "baseURL": "https://your-llmg-domain.com/v1",
+        "baseURL": "https://llmg.oneclaw.me/v1",
         "apiKey": "your_api_key"
       }
     }

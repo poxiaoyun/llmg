@@ -7,7 +7,7 @@ LLMG 同时支持 Claude Messages 风格的调用入口。如果你的工具或 
 Claude Messages 的常用入口是：
 
 ```text
-https://your-llmg-domain.com/v1/messages
+https://llmg.oneclaw.me/v1/messages
 ```
 
 ## 必要请求头
@@ -24,7 +24,7 @@ anthropic-version: 2023-06-01
 ## cURL 验证请求
 
 ```bash
-curl https://your-llmg-domain.com/v1/messages \
+curl https://llmg.oneclaw.me/v1/messages \
   -H "x-api-key: YOUR_LLMG_API_KEY" \
   -H "anthropic-version: 2023-06-01" \
   -H "Content-Type: application/json" \
@@ -48,7 +48,7 @@ curl https://your-llmg-domain.com/v1/messages \
 如果你想用 Anthropic 风格检查模型列表，可以继续请求 `/v1/models`，同时携带 Anthropic 头：
 
 ```bash
-curl https://your-llmg-domain.com/v1/models \
+curl https://llmg.oneclaw.me/v1/models \
   -H "x-api-key: YOUR_LLMG_API_KEY" \
   -H "anthropic-version: 2023-06-01"
 ```

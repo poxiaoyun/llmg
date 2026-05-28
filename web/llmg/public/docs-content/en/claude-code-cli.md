@@ -37,7 +37,7 @@ claude --version
 ### One-shot verification
 
 ```bash
-ANTHROPIC_BASE_URL="https://your-llmg-domain.com/v1" \
+ANTHROPIC_BASE_URL="https://llmg.oneclaw.me/v1" \
 ANTHROPIC_AUTH_TOKEN="your_api_key" \
 ANTHROPIC_API_KEY="" \
 ANTHROPIC_MODEL="claude-3-5-sonnet" \
@@ -48,7 +48,7 @@ claude
 
 ```bash
 export LLMG_API_KEY="your_api_key"
-export ANTHROPIC_BASE_URL="https://your-llmg-domain.com/v1"
+export ANTHROPIC_BASE_URL="https://llmg.oneclaw.me/v1"
 export ANTHROPIC_AUTH_TOKEN="$LLMG_API_KEY"
 export ANTHROPIC_API_KEY=""
 export ANTHROPIC_MODEL="claude-3-5-sonnet"

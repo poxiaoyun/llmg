@@ -16,7 +16,7 @@
 OpenAI 兼容调用统一使用“你的网关域名 + `/v1`”这一个入口：
 
 ```text
-https://your-llmg-domain.com/v1
+https://llmg.oneclaw.me/v1
 ```
 
 本地开发默认常见写法：
@@ -32,7 +32,7 @@ http://localhost:3000/v1
 ### curl
 
 ```bash
-curl https://your-llmg-domain.com/v1/chat/completions \
+curl https://llmg.oneclaw.me/v1/chat/completions \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -48,7 +48,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key="YOUR_LLMG_API_KEY",
-    base_url="https://your-llmg-domain.com/v1",
+    base_url="https://llmg.oneclaw.me/v1",
 )
 
 response = client.chat.completions.create(
@@ -66,7 +66,7 @@ import OpenAI from 'openai'
 
 const client = new OpenAI({
   apiKey: process.env.LLMG_API_KEY,
-  baseURL: 'https://your-llmg-domain.com/v1',
+  baseURL: 'https://llmg.oneclaw.me/v1',
 })
 
 const response = await client.chat.completions.create({
@@ -120,7 +120,7 @@ console.log(response.choices[0]?.message?.content)
 ### 程序化列出模型
 
 ```bash
-curl https://your-llmg-domain.com/v1/models \
+curl https://llmg.oneclaw.me/v1/models \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY"
 ```
 

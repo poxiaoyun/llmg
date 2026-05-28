@@ -19,6 +19,8 @@ export const DOC_PAGE_IDS = [
   'opencode-cli',
   'vscode-extension',
   'api-reference',
+  'agents-overview',
+  'hermes-agent',
 ] as const
 
 export type DocsPageId = (typeof DOC_PAGE_IDS)[number]
@@ -34,7 +36,7 @@ export type DocsPage = {
   updatedAt: string
   icon: LucideIcon
   keywords: string[]
-  navGroup?: 'cli'
+  navGroup?: 'cli' | 'agents'
 }
 
 type DocsPageDefinition = {
@@ -42,7 +44,7 @@ type DocsPageDefinition = {
   sectionKey: string
   icon: LucideIcon
   keywords: string[]
-  navGroup?: 'cli'
+  navGroup?: 'cli' | 'agents'
 }
 
 type DocsNavPageItem = {
@@ -122,6 +124,20 @@ const DOCS_PAGE_DEFINITIONS: Record<DocsPageId, DocsPageDefinition> = {
     icon: SquareTerminal,
     keywords: ['api', 'reference', 'chat completions', 'messages', 'models'],
   },
+  'agents-overview': {
+    markdownName: 'agents-overview',
+    sectionKey: 'docs.sections.agents',
+    icon: Bot,
+    keywords: ['agents', 'runtime', 'yaml', 'custom provider', 'hermes'],
+    navGroup: 'agents',
+  },
+  'hermes-agent': {
+    markdownName: 'hermes-agent',
+    sectionKey: 'docs.sections.agents',
+    icon: Bot,
+    keywords: ['hermes', 'nous research', 'config.yaml', 'custom provider', 'llmg api key'],
+    navGroup: 'agents',
+  },
 }
 
 const DOCS_NAV_ITEMS: Array<DocsNavPageItem | DocsNavGroupItem> = [
@@ -132,6 +148,12 @@ const DOCS_NAV_ITEMS: Array<DocsNavPageItem | DocsNavGroupItem> = [
     id: 'cli',
     titleKey: 'docs.groups.cliAgents',
     pageIds: ['cli-overview', 'codex-cli', 'claude-code-cli', 'opencode-cli'],
+  },
+  {
+    type: 'group',
+    id: 'agents',
+    titleKey: 'docs.groups.agents',
+    pageIds: ['agents-overview', 'hermes-agent'],
   },
   { type: 'page', pageId: 'vscode-extension' },
   { type: 'page', pageId: 'api-reference' },
@@ -169,7 +191,7 @@ export function getDocsPages(
           summary: t(`docs.pages.${pageId}.summary`),
           description: t(`docs.pages.${pageId}.description`),
           sectionTitle: t(definition.sectionKey),
-          markdownPath: `/docs/${locale}/${definition.markdownName}.md`,
+          markdownPath: `/docs-content/${locale}/${definition.markdownName}.md`,
           updatedAt: '2026-05-11',
           icon: definition.icon,
           keywords: definition.keywords,
@@ -215,6 +237,13 @@ export function isCliDocsPage(
   pageId: DocsPageId
 ) {
   return pages[pageId].navGroup === 'cli'
+}
+
+export function isAgentsDocsPage(
+  pages: Record<DocsPageId, DocsPage>,
+  pageId: DocsPageId
+) {
+  return pages[pageId].navGroup === 'agents'
 }
 
 function matchesPage(page: DocsPage, normalizedQuery: string) {

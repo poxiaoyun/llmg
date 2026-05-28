@@ -6,7 +6,7 @@
 
 ## 当前维护方式
 
-- 文档内容目录：`web/llmg/public/docs/`
+- 文档内容目录：`web/llmg/public/docs-content/`
 - 文档页面入口：`/docs`
 - 页面骨架实现：`web/llmg/src/features/docs/`
 

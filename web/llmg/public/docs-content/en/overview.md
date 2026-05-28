@@ -22,7 +22,7 @@ You create a user-facing key in the LLMG console, not in the upstream provider. 
 All OpenAI-compatible examples in this docs site use one gateway entry:
 
 ```text
-https://your-llmg-domain.com/v1
+https://llmg.oneclaw.me/v1
 ```
 
 For local development, the common default is:

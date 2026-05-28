@@ -49,7 +49,7 @@ anthropic-version: 2023-06-01
 ## `chat/completions` 示例
 
 ```bash
-curl https://your-llmg-domain.com/v1/chat/completions \
+curl https://llmg.oneclaw.me/v1/chat/completions \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -62,7 +62,7 @@ curl https://your-llmg-domain.com/v1/chat/completions \
 ## `messages` 示例
 
 ```bash
-curl https://your-llmg-domain.com/v1/messages \
+curl https://llmg.oneclaw.me/v1/messages \
   -H "x-api-key: YOUR_LLMG_API_KEY" \
   -H "anthropic-version: 2023-06-01" \
   -H "Content-Type: application/json" \
@@ -92,7 +92,7 @@ curl https://your-llmg-domain.com/v1/messages \
 程序化发现模型时，优先使用：
 
 ```bash
-curl https://your-llmg-domain.com/v1/models \
+curl https://llmg.oneclaw.me/v1/models \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY"
 ```
 

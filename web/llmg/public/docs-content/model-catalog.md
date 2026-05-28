@@ -18,7 +18,7 @@
 如果你要在代码里动态发现模型，用 `/v1/models` 更合适：
 
 ```bash
-curl https://your-llmg-domain.com/v1/models \
+curl https://llmg.oneclaw.me/v1/models \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY"
 ```
 

@@ -32,7 +32,7 @@ opencode --version
 
 ```bash
 export OPENAI_API_KEY="your_api_key"
-export OPENAI_BASE_URL="https://your-llmg-domain.com/v1"
+export OPENAI_BASE_URL="https://llmg.oneclaw.me/v1"
 ```
 
 ## 3. 创建 `opencode.jsonc`
@@ -64,7 +64,7 @@ export OPENAI_BASE_URL="https://your-llmg-domain.com/v1"
         }
       },
       "options": {
-        "baseURL": "https://your-llmg-domain.com/v1",
+        "baseURL": "https://llmg.oneclaw.me/v1",
         "apiKey": "your_api_key"
       }
     }
@@ -98,4 +98,4 @@ opencode
 
 ### 连接失败
 
-优先检查 `baseURL` 是否写成完整的 `https://your-llmg-domain.com/v1`。
+优先检查 `baseURL` 是否写成完整的 `https://llmg.oneclaw.me/v1`。

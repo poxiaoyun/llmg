@@ -14,7 +14,7 @@ This page is about one thing only: getting your first successful request through
 For OpenAI-compatible requests, the gateway entry is your domain plus `/v1`:
 
 ```text
-https://your-llmg-domain.com/v1
+https://llmg.oneclaw.me/v1
 ```
 
 The common local development value is:
@@ -30,7 +30,7 @@ Use one short `chat/completions` request to confirm that your key, base URL, and
 ### curl
 
 ```bash
-curl https://your-llmg-domain.com/v1/chat/completions \
+curl https://llmg.oneclaw.me/v1/chat/completions \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -46,7 +46,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key="YOUR_LLMG_API_KEY",
-    base_url="https://your-llmg-domain.com/v1",
+    base_url="https://llmg.oneclaw.me/v1",
 )
 
 response = client.chat.completions.create(
@@ -64,7 +64,7 @@ import OpenAI from 'openai'
 
 const client = new OpenAI({
   apiKey: process.env.LLMG_API_KEY,
-  baseURL: 'https://your-llmg-domain.com/v1',
+  baseURL: 'https://llmg.oneclaw.me/v1',
 })
 
 const response = await client.chat.completions.create({
@@ -114,7 +114,7 @@ Every LLMG instance can expose a different model set. Use one of these checks be
 | `GET /v1/models` | You want the live model list inside a script or deployment workflow. |
 
 ```bash
-curl https://your-llmg-domain.com/v1/models \
+curl https://llmg.oneclaw.me/v1/models \
   -H "Authorization: Bearer YOUR_LLMG_API_KEY"
 ```
 
