@@ -8,10 +8,12 @@
         "gettingStarted": "开始使用",
         "cliAgents": "CLI 智能体",
         "editorIntegration": "编辑器集成",
-        "reference": "参考"
+        "reference": "参考",
+        "agents": "智能体"
       },
       "groups": {
-        "cliAgents": "CLI 智能体"
+        "cliAgents": "CLI 智能体",
+        "agents": "智能体"
       },
       "shell": {
         "searchPlaceholder": "搜索文档...",
@@ -65,6 +67,16 @@
           "title": "API 参考",
           "summary": "查看鉴权方式、路径、请求字段、响应结构和模型发现方法。",
           "description": "当你已经拿到 key 和 endpoint，需要对照协议完成正式集成时，请看这里。"
+        },
+        "agents-overview": {
+          "title": "总览",
+          "summary": "通过在 YAML 或 JSON 配置文件中将 LLMG 注册为自定义 Provider，将长期运行的 AI 智能体接入网关。",
+          "description": "如果你的 AI 工具是独立运行的 Agent 运行时，并从文件中读取 provider 配置而非每次调用都使用环境变量，从这里开始。"
+        },
+        "hermes-agent": {
+          "title": "Hermes Agent",
+          "summary": "在 ~/.hermes/config.yaml 中将 LLMG 添加为自定义 provider，并把 Hermes 路由到你的网关。",
+          "description": "适用于运行 Nous Research 的 Hermes 智能体，希望通过 custom_providers YAML 配置接入 LLMG 的用户。"
         }
       }
     },

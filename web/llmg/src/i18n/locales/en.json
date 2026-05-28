@@ -8,10 +8,12 @@
         "gettingStarted": "Getting started",
         "cliAgents": "CLI agents",
         "editorIntegration": "Editor integration",
-        "reference": "Reference"
+        "reference": "Reference",
+        "agents": "Agents"
       },
       "groups": {
-        "cliAgents": "CLI agents"
+        "cliAgents": "CLI agents",
+        "agents": "Agents"
       },
       "shell": {
         "searchPlaceholder": "Search documentation...",
@@ -65,6 +67,16 @@
           "title": "API reference",
           "summary": "Review authentication, endpoints, request fields, response shapes, and model discovery.",
           "description": "Use this when you already have a key and endpoint and need the protocol details to finish a production integration."
+        },
+        "agents-overview": {
+          "title": "Overview",
+          "summary": "Connect long-running AI agent runtimes to LLMG by registering it as a custom provider in a YAML or JSON config file.",
+          "description": "Use this section when your AI tool is a self-contained agent runtime that reads provider config from a file rather than per-call environment variables."
+        },
+        "hermes-agent": {
+          "title": "Hermes Agent",
+          "summary": "Add LLMG as a custom provider in ~/.hermes/config.yaml and route Hermes to your gateway.",
+          "description": "Use this guide if you run Hermes by Nous Research and want to point it at LLMG using the custom_providers YAML block."
         }
       }
     },

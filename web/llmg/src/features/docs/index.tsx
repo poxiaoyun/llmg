@@ -38,6 +38,7 @@ import {
   getDocsPages,
   getDocSearch,
   isCliDocsPage,
+  isAgentsDocsPage,
   type DocsPageId,
 } from './content'
 import { DocsMarkdown } from './components/docs-markdown'
@@ -76,6 +77,7 @@ export function Docs({ pageId }: DocsProps) {
   const userRole = useAuthStore((state) => state.auth.user?.role)
   const [query, setQuery] = useState('')
   const [cliOpenOverride, setCliOpenOverride] = useState<boolean | null>(null)
+    const [agentsOpenOverride, setAgentsOpenOverride] = useState<boolean | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const canOpenSystemSettings = canAccessSystemSettings(userRole)
 
@@ -115,6 +117,8 @@ export function Docs({ pageId }: DocsProps) {
   )
   const cliOpen =
     cliOpenOverride ?? (isCliDocsPage(pages, currentPage.id) || query.trim().length > 0)
+  const agentsOpen =
+    agentsOpenOverride ?? (isAgentsDocsPage(pages, currentPage.id) || query.trim().length > 0)
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -199,14 +203,20 @@ export function Docs({ pageId }: DocsProps) {
                       return (
                         <Collapsible
                           key={item.id}
-                          open={cliOpen}
-                          onOpenChange={(open) => setCliOpenOverride(open)}
+                          open={item.id === 'agents' ? agentsOpen : cliOpen}
+                          onOpenChange={(open) =>
+                            item.id === 'agents'
+                              ? setAgentsOpenOverride(open)
+                              : setCliOpenOverride(open)
+                          }
                         >
                           <CollapsibleTrigger className='text-muted-foreground hover:bg-muted/50 hover:text-foreground flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-colors'>
                             <span>{item.title}</span>
                             <ChevronRight
                               className={`size-4 transition-transform ${
-                                cliOpen ? 'text-foreground rotate-90' : ''
+                                (item.id === 'agents' ? agentsOpen : cliOpen)
+                                  ? 'text-foreground rotate-90'
+                                  : ''
                               }`}
                             />
                           </CollapsibleTrigger>
