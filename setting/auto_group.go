@@ -6,6 +6,8 @@ import (
 
 var autoGroups = []string{
 	"default",
+	"vip",
+	"svip",
 }
 
 var DefaultUseAutoGroup = false

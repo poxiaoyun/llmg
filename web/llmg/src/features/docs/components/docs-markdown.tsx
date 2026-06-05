@@ -1,4 +1,10 @@
-import { createElement, isValidElement, useEffect, useMemo, useState } from 'react'
+import {
+  createElement,
+  isValidElement,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import type { ReactNode, ReactElement } from 'react'
 import { Link2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
@@ -46,7 +52,9 @@ function flattenText(node: ReactNode): string {
   }
 
   if (isValidElement(node)) {
-    return flattenText((node as ReactElement<{ children?: ReactNode }>).props.children)
+    return flattenText(
+      (node as ReactElement<{ children?: ReactNode }>).props.children
+    )
   }
 
   return ''
@@ -62,28 +70,29 @@ function createHeading(level: 'h1' | 'h2' | 'h3') {
       {
         id,
         className: cn(
-          'group scroll-mt-24',
-          level === 'h1' && 'mt-0 text-3xl font-semibold tracking-tight',
-          level === 'h2' && 'mt-10 text-xl font-semibold tracking-tight',
-          level === 'h3' && 'mt-8 text-base font-semibold tracking-tight'
+          'group scroll-mt-24 text-foreground',
+          level === 'h1' &&
+            'mt-0 mb-5 text-3xl font-semibold leading-tight tracking-tight sm:text-[2rem]',
+          level === 'h2' &&
+            'mt-10 mb-3 border-b border-border/70 pb-2 text-[1.35rem] font-semibold leading-snug tracking-tight',
+          level === 'h3' &&
+            'mt-7 mb-2 text-lg font-semibold leading-snug tracking-tight'
         ),
       },
-      [
-        children,
-        level !== 'h1'
-          ? createElement(
-              'a',
-              {
-                key: `${id}-anchor`,
-                href: `#${id}`,
-                className:
-                  'text-muted-foreground ml-2 inline-flex opacity-0 transition-opacity group-hover:opacity-100',
-                'aria-label': `Jump to ${text}`,
-              },
-              createElement(Link2, { className: 'size-4' })
-            )
-          : null,
-      ]
+      children,
+      level !== 'h1'
+        ? createElement(
+            'a',
+            {
+              key: `${id}-anchor`,
+              href: `#${id}`,
+              className:
+                'ml-2 inline-flex align-middle text-muted-foreground/70 opacity-0 transition-opacity group-hover:opacity-100',
+              'aria-label': `Jump to ${text}`,
+            },
+            createElement(Link2, { className: 'size-4' })
+          )
+        : null
     )
   }
 }
@@ -94,7 +103,8 @@ function getCodeBlockLanguage(node: ReactNode): string {
   }
 
   if (isValidElement(node)) {
-    const className = (node as ReactElement<{ className?: string }>).props.className
+    const className = (node as ReactElement<{ className?: string }>).props
+      .className
     const matched = className?.match(/language-([\w-]+)/)
 
     if (matched?.[1]) {
@@ -105,7 +115,10 @@ function getCodeBlockLanguage(node: ReactNode): string {
   return 'TEXT'
 }
 
-function getCodeBlockInfo(node: ReactNode): { code: string; language?: string } {
+function getCodeBlockInfo(node: ReactNode): {
+  code: string
+  language?: string
+} {
   if (Array.isArray(node) && node.length > 0) {
     for (const child of node) {
       const next = getCodeBlockInfo(child)
@@ -133,14 +146,20 @@ function getCodeBlockInfo(node: ReactNode): { code: string; language?: string } 
   }
 }
 
-function resolveDocsHighlightLanguage(language?: string): BundledLanguage | null {
+function resolveDocsHighlightLanguage(
+  language?: string
+): BundledLanguage | null {
   if (!language) {
     return null
   }
 
   const normalized = language.toLowerCase()
 
-  if (normalized === 'text' || normalized === 'txt' || normalized === 'plaintext') {
+  if (
+    normalized === 'text' ||
+    normalized === 'txt' ||
+    normalized === 'plaintext'
+  ) {
     return null
   }
 
@@ -148,7 +167,10 @@ function resolveDocsHighlightLanguage(language?: string): BundledLanguage | null
 }
 
 function DocsCodeBlock({ children }: { children?: ReactNode }) {
-  const { code, language } = useMemo(() => getCodeBlockInfo(children), [children])
+  const { code, language } = useMemo(
+    () => getCodeBlockInfo(children),
+    [children]
+  )
   const resolvedLanguage = useMemo(
     () => resolveDocsHighlightLanguage(language),
     [language]
@@ -185,8 +207,8 @@ function DocsCodeBlock({ children }: { children?: ReactNode }) {
   }, [code, resolvedLanguage])
 
   return (
-    <div className='not-prose my-5 overflow-hidden rounded-lg border bg-background/70 shadow-none'>
-      <div className='bg-muted/50 border-b px-4 py-2'>
+    <div className='not-prose bg-background/70 my-5 overflow-hidden rounded-md border shadow-none'>
+      <div className='bg-muted/45 border-b px-4 py-2'>
         <span className='text-muted-foreground font-mono text-[11px] font-medium uppercase'>
           {getCodeBlockLanguage(children)}
         </span>
@@ -194,11 +216,11 @@ function DocsCodeBlock({ children }: { children?: ReactNode }) {
 
       {highlightedHtml ? (
         <div
-          className='overflow-hidden [&>pre]:!m-0 [&>pre]:!bg-transparent [&>pre]:!p-4 [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm [&_code]:leading-relaxed'
+          className='overflow-hidden [&_code]:font-mono [&_code]:text-sm [&_code]:leading-6 [&>pre]:!m-0 [&>pre]:!bg-transparent [&>pre]:!p-4 [&>pre]:text-sm'
           dangerouslySetInnerHTML={{ __html: highlightedHtml }}
         />
       ) : (
-        <pre className='m-0 overflow-x-auto bg-transparent px-4 py-3 text-sm leading-relaxed text-foreground'>
+        <pre className='text-foreground m-0 overflow-x-auto bg-transparent px-4 py-3 text-sm leading-6'>
           <code>{code}</code>
         </pre>
       )}
@@ -210,16 +232,17 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
   return (
     <div
       className={cn(
-        'prose prose-base max-w-none dark:prose-invert',
-        'prose-headings:font-semibold prose-headings:tracking-tight',
-        'prose-h1:mb-6 prose-h1:text-3xl prose-h2:mt-12 prose-h2:mb-5 prose-h2:border-b prose-h2:border-border/60 prose-h2:pb-3 prose-h2:text-xl prose-h3:mt-9 prose-h3:mb-4 prose-h3:text-lg',
-        'prose-p:my-4 prose-p:leading-8 prose-p:text-muted-foreground',
-        'prose-li:my-2 prose-li:leading-8 prose-li:text-muted-foreground prose-li:marker:text-primary/65',
-        'prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
+        'prose prose-base dark:prose-invert max-w-none',
+        'prose-headings:text-foreground prose-headings:font-semibold prose-headings:tracking-tight',
+        'prose-h1:mb-5 prose-h1:text-3xl prose-h1:leading-tight prose-h2:mt-10 prose-h2:mb-3 prose-h2:border-b prose-h2:border-border/70 prose-h2:pb-2 prose-h2:text-[1.35rem] prose-h2:leading-snug prose-h3:mt-7 prose-h3:mb-2 prose-h3:text-lg prose-h3:leading-snug',
+        'prose-p:my-3 prose-p:leading-7 prose-p:text-foreground/78',
+        'prose-li:my-1.5 prose-li:leading-7 prose-li:text-foreground/78 prose-li:marker:text-primary/65',
+        'prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline',
         'prose-strong:text-foreground',
-        'prose-img:rounded-lg prose-img:border prose-img:shadow-sm',
+        'prose-img:rounded-md prose-img:border prose-img:shadow-sm',
         'prose-hr:border-border/60',
-        'prose-ul:my-5 prose-ol:my-5',
+        'prose-ul:my-4 prose-ol:my-4',
+        'prose-th:text-foreground prose-td:leading-6',
         '[&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
         '[overflow-wrap:anywhere] break-words',
         className
@@ -233,9 +256,7 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
           h2: createHeading('h2'),
           h3: createHeading('h3'),
           a: ({ href, ...props }) => {
-            const isExternal = Boolean(
-              href && /^(https?:)?\/\//.test(href)
-            )
+            const isExternal = Boolean(href && /^(https?:)?\/\//.test(href))
 
             return (
               <a
@@ -246,14 +267,25 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
               />
             )
           },
-          pre: ({ children: codeChildren }) => <DocsCodeBlock>{codeChildren}</DocsCodeBlock>,
-          code: ({ className: codeClassName, children: codeChildren, ...props }) => {
-            const isBlockCode = Boolean(codeClassName && /language-/.test(codeClassName))
+          pre: ({ children: codeChildren }) => (
+            <DocsCodeBlock>{codeChildren}</DocsCodeBlock>
+          ),
+          code: ({
+            className: codeClassName,
+            children: codeChildren,
+            ...props
+          }) => {
+            const isBlockCode = Boolean(
+              codeClassName && /language-/.test(codeClassName)
+            )
 
             if (isBlockCode) {
               return (
                 <code
-                  className={cn('bg-transparent p-0 text-inherit', codeClassName)}
+                  className={cn(
+                    'bg-transparent p-0 text-inherit',
+                    codeClassName
+                  )}
                   {...props}
                 >
                   {codeChildren}
@@ -263,7 +295,7 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
 
             return (
               <code
-                className='bg-muted rounded border px-1 py-0.5 text-[0.92em] before:content-none after:content-none'
+                className='bg-muted/75 text-foreground rounded-md border px-1.5 py-0.5 text-[0.9em] before:content-none after:content-none'
                 {...props}
               >
                 {codeChildren}
@@ -271,12 +303,12 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
             )
           },
           blockquote: ({ children: quoteChildren }) => (
-            <blockquote className='not-prose my-5 rounded-lg border-l-4 border-l-primary bg-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground/90'>
+            <blockquote className='not-prose border-border/70 border-l-primary/70 bg-muted/35 text-foreground/85 [&_a]:text-primary [&_code]:bg-background/80 [&_strong]:text-foreground my-5 rounded-md border border-l-[3px] px-4 py-3 text-[0.95rem] leading-7 [&_a]:font-medium [&_code]:rounded-md [&_code]:border [&_code]:px-1.5 [&_code]:py-0.5 [&>p]:m-0 [&>p+p]:mt-2'>
               {quoteChildren}
             </blockquote>
           ),
           table: ({ children: tableChildren }) => (
-            <div className='not-prose my-5 overflow-hidden rounded-lg border bg-background/70 shadow-none'>
+            <div className='not-prose bg-background/70 my-5 overflow-hidden rounded-md border shadow-none'>
               <div className='overflow-x-auto'>
                 <table className='m-0 w-full text-sm'>{tableChildren}</table>
               </div>
@@ -288,7 +320,7 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
           th: ({ className: thClassName, ...props }) => (
             <th
               className={cn(
-                'border px-3 py-2 text-left text-xs font-semibold tracking-[0.14em] uppercase',
+                'text-foreground border px-3 py-2 text-left text-xs font-semibold tracking-[0.12em] uppercase',
                 thClassName
               )}
               {...props}
@@ -296,7 +328,10 @@ export function DocsMarkdown({ children, className }: DocsMarkdownProps) {
           ),
           td: ({ className: tdClassName, ...props }) => (
             <td
-              className={cn('border px-3 py-2 text-muted-foreground', tdClassName)}
+              className={cn(
+                'text-foreground/78 border px-3 py-2.5 leading-6',
+                tdClassName
+              )}
               {...props}
             />
           ),

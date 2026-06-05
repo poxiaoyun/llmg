@@ -7,8 +7,10 @@ import (
 	"strings"
 
 	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/constant"
 	"github.com/QuantumNous/new-api/i18n"
 	"github.com/QuantumNous/new-api/model"
+	"github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +26,29 @@ func validateTokenRateLimits(token *model.Token) error {
 	if token.TPMLimit < 0 {
 		return fmt.Errorf("TPM limit cannot be negative")
 	}
+	return nil
+}
+
+func enforceUserScopedTokenGroup(c *gin.Context, token *model.Token) error {
+	if token == nil {
+		return nil
+	}
+	userGroup := common.GetContextKeyString(c, constant.ContextKeyUserGroup)
+	if userGroup == "" {
+		userGroup = c.GetString("group")
+	}
+	if userGroup == "" {
+		var err error
+		userGroup, err = model.GetUserGroup(c.GetInt("id"), false)
+		if err != nil {
+			return fmt.Errorf("get user group failed: %w", err)
+		}
+	}
+	if len(service.GetUserUsableGroups(userGroup)) == 0 {
+		return fmt.Errorf("no usable groups configured for user group %s", userGroup)
+	}
+	token.Group = "auto"
+	token.CrossGroupRetry = true
 	return nil
 }
 
@@ -243,6 +268,10 @@ func AddToken(c *gin.Context) {
 		TPMLimit:           token.TPMLimit,
 		CrossGroupRetry:    token.CrossGroupRetry,
 	}
+	if err = enforceUserScopedTokenGroup(c, &cleanToken); err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	err = cleanToken.Insert()
 	if err != nil {
 		common.ApiError(c, err)
@@ -326,6 +355,10 @@ func UpdateToken(c *gin.Context) {
 		cleanToken.RPMLimit = token.RPMLimit
 		cleanToken.TPMLimit = token.TPMLimit
 		cleanToken.CrossGroupRetry = token.CrossGroupRetry
+		if err = enforceUserScopedTokenGroup(c, cleanToken); err != nil {
+			common.ApiError(c, err)
+			return
+		}
 	}
 	err = cleanToken.Update()
 	if err != nil {
